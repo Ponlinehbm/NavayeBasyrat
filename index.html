@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>پادکست</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="podcasts.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ============================================
+       DESIGN TOKENS & RESET
+    ============================================ */
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface2: #1a1a26;
+      --surface3: #22222f;
+      --border: rgba(255,255,255,0.07);
+      --accent: #7c6aff;
+      --accent2: #ff6a9e;
+      --accent3: #6affda;
+      --text: #f0f0ff;
+      --text2: #9090b0;
+      --text3: #5a5a7a;
+      --player-h: 88px;
+      --radius: 18px;
+      --radius-sm: 10px;
+      --font: 'Vazirmatn', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: var(--bg);
+      font-family: var(--font);
+      color: var(--text);
+    }
+
+    /* ============================================
+       LAYOUT SHELL
+    ============================================ */
+    #app {
+      display: flex; flex-direction: column;
+      height: 100vh; height: 100dvh;
+      position: relative; overflow: hidden;
+    }
+
+    /* ============================================
+       HEADER
+    ============================================ */
+    .header {
+      padding: 20px 20px 0;
+      flex-shrink: 0;
+    }
+
+    .header-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .logo-group { display: flex; align-items: center; gap: 12px; }
+
+    .logo-icon {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 8px 24px rgba(124,106,255,0.35);
+    }
+
+    .logo-text h1 {
+      font-size: 17px; font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-text p {
+      font-size: 12px; color: var(--text3);
+      margin-top: 1px;
+    }
+
+    .header-actions { display: flex; gap: 8px; }
+
+    .icon-btn {
+      width: 38px; height: 38px; border-radius: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 16px;
+      transition: background .2s;
+    }
+    .icon-btn:active { background: var(--surface3); }
+
+    /* Search */
+    .search-bar {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      transition: border-color .2s;
+    }
+    .search-bar:focus-within { border-color: var(--accent); }
+    .search-bar svg { color: var(--text3); flex-shrink: 0; }
+    .search-bar input {
+      flex: 1; background: none; border: none; outline: none;
+      color: var(--text); font-family: var(--font); font-size: 14px;
+      direction: rtl;
+    }
+    .search-bar input::placeholder { color: var(--text3); }
+
+    /* Categories */
+    .categories {
+      display: flex; gap: 8px;
+      overflow-x: auto; padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .categories::-webkit-scrollbar { display: none; }
+
+    .cat-btn {
+      flex-shrink: 0;
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 50px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text2); font-family: var(--font);
+      font-size: 13px; font-weight: 500;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .cat-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(124,106,255,0.4);
+    }
+
+    /* ============================================
+       SCROLL CONTAINER
+    ============================================ */
+    .scroll-area {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      padding: 16px 20px;
+      padding-bottom: calc(var(--player-h) + 20px);
+      scrollbar-width: none;
+    }
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    /* Section label */
+    .section-label {
+      font-size: 13px; font-weight: 600;
+      color: var(--text3); text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    /* ============================================
+       FEATURED CARD (latest episode)
+    ============================================ */
+    .featured-card {
+      background: linear-gradient(135deg, #1e1830 0%, #12121a 100%);
+      border: 1px solid rgba(124,106,255,0.2);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 24px;
+      position: relative; overflow: hidden;
+      cursor: pointer;
+      transition: transform .2s;
+    }
+    .featured-card:active { transform: scale(0.98); }
+
+    .featured-card::before {
+      content: '';
+      position: absolute; top: -40px; left: -40px;
+      width: 180px; height: 180px;
+      background: radial-gradient(circle, rgba(124,106,255,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .featured-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(124,106,255,0.2);
+      border: 1px solid rgba(124,106,255,0.3);
+      border-radius: 50px; padding: 4px 10px;
+      font-size: 11px; font-weight: 600; color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .featured-title {
+      font-size: 18px; font-weight: 700; line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .featured-desc {
+      font-size: 13px; color: var(--text2); line-height: 1.6;
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .featured-meta {
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .featured-play-btn {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--accent);
+      border-radius: 50px; padding: 10px 20px;
+      font-size: 14px; font-weight: 600;
+      box-shadow: 0 6px 20px rgba(124,106,255,0.4);
+    }
+
+    .featured-duration {
+      font-size: 13px; color: var(--text3);
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    /* ============================================
+       PODCAST LIST ITEMS
+    ============================================ */
+    .list-title {
+      font-size: 16px; font-weight: 700;
+      margin-bottom: 12px; color: var(--text);
+    }
+
+    .podcast-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .podcast-item {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      cursor: pointer;
+      transition: all .2s;
+      position: relative; overflow: hidden;
+    }
+    .podcast-item:active { background: var(--surface2); }
+    .podcast-item.playing {
+      border-color: rgba(124,106,255,0.4);
+      background: rgba(124,106,255,0.06);
+    }
+
+    .item-thumb {
+      width: 52px; height: 52px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--surface3), var(--surface2));
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; position: relative; overflow: hidden;
+      font-size: 22px;
+    }
+
+    .item-thumb.ep-thumb {
+      background: linear-gradient(135deg, 
+        hsl(calc(var(--ep-hue) * 1deg), 60%, 25%),
+        hsl(calc(var(--ep-hue) * 1deg), 40%, 15%)
+      );
+    }
+
+    .item-thumb .ep-num {
+      position: absolute;
+      font-size: 10px; font-weight: 900; color: rgba(255,255,255,0.5);
+      bottom: 4px; right: 5px;
+    }
+
+    .item-playing-indicator {
+      position: absolute; inset: 0;
+      background: rgba(124,106,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .wave-bars {
+      display: flex; align-items: flex-end; gap: 2px; height: 20px;
+    }
+    .wave-bar {
+      width: 3px; border-radius: 3px; background: var(--accent);
+      animation: wave 0.8s ease-in-out infinite;
+    }
+    .wave-bar:nth-child(2) { animation-delay: .15s; }
+    .wave-bar:nth-child(3) { animation-delay: .3s; }
+    .wave-bar:nth-child(4) { animation-delay: .15s; }
+
+    @keyframes wave {
+      0%, 100% { height: 6px; }
+      50% { height: 18px; }
+    }
+
+    .item-info { flex: 1; min-width: 0; }
+
+    .item-ep {
+      font-size: 11px; font-weight: 600; color: var(--accent);
+      margin-bottom: 3px;
+    }
+
+    .item-title {
+      font-size: 14px; font-weight: 600; line-height: 1.3;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 5px;
+    }
+
+    .item-meta {
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .item-date {
+      font-size: 11px; color: var(--text3);
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    .item-dur {
+      font-size: 11px; color: var(--text3);
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    .item-tags {
+      display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 10px; padding: 2px 7px;
+      background: var(--surface3);
+      border-radius: 50px; color: var(--text3);
+      font-weight: 500;
+    }
+
+    .item-play-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--surface3);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background .2s, transform .2s;
+    }
+    .podcast-item.playing .item-play-btn {
+      background: var(--accent);
+    }
+    .item-play-btn:active { transform: scale(0.9); }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 60px 20px;
+      color: var(--text3);
+    }
+    .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    /* ============================================
+       MINI PLAYER (bottom bar)
+    ============================================ */
+    .mini-player {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: var(--player-h);
+      background: rgba(18, 18, 26, 0.97);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      padding: 0 20px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      z-index: 100;
+    }
+    .mini-player.visible { display: flex; }
+
+    .player-progress {
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--surface3);
+    }
+    .player-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      width: 0%;
+      transition: width .5s linear;
+    }
+
+    .player-thumb {
+      width: 46px; height: 46px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+
+    .player-info { flex: 1; min-width: 0; }
+
+    .player-title {
+      font-size: 13px; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .player-time {
+      font-size: 11px; color: var(--text3); margin-top: 2px;
+    }
+
+    .player-controls { display: flex; align-items: center; gap: 6px; }
+
+    .ctrl-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: transform .15s;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 18px;
+    }
+    .ctrl-btn:active { transform: scale(0.88); }
+
+    .ctrl-btn.play-main {
+      width: 44px; height: 44px;
+      background: var(--accent);
+      font-size: 20px;
+      box-shadow: 0 4px 16px rgba(124,106,255,0.4);
+    }
+
+    /* ============================================
+       FULL PLAYER SHEET
+    ============================================ */
+    .full-player {
+      position: fixed; inset: 0; z-index: 200;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      transform: translateY(100%);
+      transition: transform .35s cubic-bezier(.32,.72,0,1);
+    }
+    .full-player.open { transform: translateY(0); }
+
+    .fp-handle {
+      width: 36px; height: 4px; border-radius: 4px;
+      background: var(--surface3); margin: 14px auto 0;
+    }
+
+    .fp-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px;
+    }
+
+    .fp-close {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 18px;
+    }
+
+    .fp-title-sm { font-size: 14px; font-weight: 600; color: var(--text2); }
+
+    .fp-tg-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 50px;
+      background: rgba(42, 175, 220, 0.15);
+      border: 1px solid rgba(42, 175, 220, 0.3);
+      color: #2aafd4; font-size: 13px; font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font);
+    }
+
+    .fp-cover-area {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 0 40px;
+    }
+
+    .fp-cover {
+      width: 220px; height: 220px; border-radius: 28px;
+      background: linear-gradient(135deg, var(--surface3), var(--surface2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 80px;
+      box-shadow: 0 32px 64px rgba(0,0,0,0.5),
+                  0 0 0 1px rgba(255,255,255,0.05);
+      transition: transform .3s;
+    }
+    .fp-cover.playing {
+      transform: scale(1.04);
+      box-shadow: 0 40px 80px rgba(124,106,255,0.25),
+                  0 0 0 1px rgba(124,106,255,0.1);
+    }
+
+    .fp-meta { padding: 0 28px; }
+
+    .fp-ep-label {
+      font-size: 12px; color: var(--accent); font-weight: 600;
+      letter-spacing: 0.5px; margin-bottom: 6px;
+    }
+
+    .fp-ep-title {
+      font-size: 20px; font-weight: 800; line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .fp-ep-desc {
+      font-size: 13px; color: var(--text2); line-height: 1.65;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .fp-seek-area { padding: 20px 28px 0; }
+
+    .fp-seek-track {
+      width: 100%; height: 4px; border-radius: 4px;
+      background: var(--surface3); position: relative;
+      cursor: pointer;
+    }
+    .fp-seek-fill {
+      position: absolute; top: 0; left: 0; height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 4px; pointer-events: none;
+      width: 0%;
+    }
+    .fp-seek-thumb {
+      position: absolute; top: 50%; left: 0%;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #fff; border: 2px solid var(--accent);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(124,106,255,0.4);
+    }
+
+    .fp-times {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: var(--text3);
+      margin-top: 8px;
+    }
+
+    .fp-controls {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; padding: 20px 28px;
+    }
+
+    .fp-ctrl {
+      width: 48px; height: 48px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 22px; color: var(--text2);
+      transition: all .2s;
+      background: none; border: none; font-family: var(--font);
+    }
+    .fp-ctrl:active { transform: scale(0.88); color: var(--text); }
+
+    .fp-ctrl.main {
+      width: 68px; height: 68px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; font-size: 28px;
+      box-shadow: 0 8px 28px rgba(124,106,255,0.5);
+    }
+
+    .fp-ctrl.speed {
+      font-size: 13px; font-weight: 700; color: var(--text2);
+      background: var(--surface2);
+      border-radius: 50px; padding: 0 14px;
+      width: auto; height: 40px;
+    }
+
+    .fp-bottom-space { height: env(safe-area-inset-bottom, 20px); }
+
+    /* ============================================
+       LOADING STATE
+    ============================================ */
+    .loading-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px;
+    }
+    .loading-overlay.hidden { display: none; }
+
+    .loader-icon { font-size: 48px; animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.92); opacity: 0.7; } }
+
+    .loader-text { font-size: 14px; color: var(--text3); font-weight: 500; }
+  </style>
+</head>
+<body>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loader-icon">🎙️</div>
+  <div class="loader-text">در حال بارگذاری…</div>
+</div>
+
+<!-- App Shell -->
+<div id="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <div class="logo-group">
+        <div class="logo-icon">🎙️</div>
+        <div class="logo-text">
+          <h1 id="channelNameEl">پادکست</h1>
+          <p id="hostNameEl">مجری</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="icon-btn" onclick="openTelegram()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="جستجو در پادکست‌ها…" oninput="handleSearch(this.value)" />
+    </div>
+
+    <!-- Categories -->
+    <div class="categories" id="categoriesEl"></div>
+  </div>
+
+  <!-- SCROLL AREA -->
+  <div class="scroll-area" id="scrollArea">
+    <!-- Featured -->
+    <div id="featuredSection"></div>
+    <!-- List -->
+    <div class="list-title" id="listTitle">همه قسمت‌ها</div>
+    <div class="podcast-list" id="podcastList"></div>
+  </div>
+
+  <!-- MINI PLAYER -->
+  <div class="mini-player" id="miniPlayer">
+    <div class="player-progress"><div class="player-progress-fill" id="miniProgress"></div></div>
+    <div class="player-thumb" id="miniThumb">🎙️</div>
+    <div class="player-info" onclick="openFullPlayer()">
+      <div class="player-title" id="miniTitle">انتخاب نشده</div>
+      <div class="player-time" id="miniTime">0:00 / 0:00</div>
+    </div>
+    <div class="player-controls">
+      <button class="ctrl-btn" onclick="skipBackward()" title="۱۵ ثانیه قبل">⏪</button>
+      <button class="ctrl-btn play-main" id="miniPlayBtn" onclick="togglePlay()">▶</button>
+      <button class="ctrl-btn" onclick="skipForward()" title="۱۵ ثانیه جلو">⏩</button>
+    </div>
+  </div>
+
+  <!-- FULL PLAYER -->
+  <div class="full-player" id="fullPlayer">
+    <div class="fp-handle"></div>
+    <div class="fp-header">
+      <div class="fp-close" onclick="closeFullPlayer()">✕</div>
+      <div class="fp-title-sm">پخش‌کننده</div>
+      <button class="fp-tg-btn" id="fpTgBtn" onclick="openCurrentInTelegram()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.02 9.52c-.148.666-.537.83-1.084.517l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.883.692z"/>
+        </svg>
+        تلگرام
+      </button>
+    </div>
+
+    <div class="fp-cover-area">
+      <div class="fp-cover" id="fpCover">🎙️</div>
+    </div>
+
+    <div class="fp-meta">
+      <div class="fp-ep-label" id="fpEpLabel">قسمت ۱</div>
+      <div class="fp-ep-title" id="fpEpTitle">عنوان قسمت</div>
+      <div class="fp-ep-desc" id="fpEpDesc">توضیحات قسمت</div>
+    </div>
+
+    <div class="fp-seek-area">
+      <div class="fp-seek-track" id="seekTrack" onclick="seekTo(event)">
+        <div class="fp-seek-fill" id="seekFill"></div>
+        <div class="fp-seek-thumb" id="seekThumb"></div>
+      </div>
+      <div class="fp-times">
+        <span id="fpCurrent">0:00</span>
+        <span id="fpDuration">0:00</span>
+      </div>
+    </div>
+
+    <div class="fp-controls">
+      <button class="fp-ctrl speed" id="speedBtn" onclick="cycleSpeed()">1×</button>
+      <button class="fp-ctrl" onclick="prevEpisode()" title="قسمت قبل">⏮</button>
+      <button class="fp-ctrl" onclick="skipBackward()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+          <text x="12" y="15" text-anchor="middle" font-size="6" fill="currentColor">15</text>
+        </svg>
+      </button>
+      <button class="fp-ctrl main" id="fpPlayBtn" onclick="togglePlay()">▶</button>
+      <button class="fp-ctrl" onclick="skipForward()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
+          <text x="12" y="15" text-anchor="middle" font-size="6" fill="currentColor">15</text>
+        </svg>
+      </button>
+      <button class="fp-ctrl" onclick="nextEpisode()" title="قسمت بعد">⏭</button>
+      <div style="width:48px"></div>
+    </div>
+
+    <div class="fp-bottom-space"></div>
+  </div>
+
+</div>
+
+<!-- Hidden audio element -->
+<audio id="audioEl" preload="none"></audio>
+
+<script>
+// ===================================================
+//  STATE
+// ===================================================
+const state = {
+  current: null,        // podcast object
+  currentIndex: -1,
+  isPlaying: false,
+  speed: 1,
+  speeds: [1, 1.25, 1.5, 1.75, 2],
+  speedIdx: 0,
+  category: 'all',
+  search: '',
+  fullPlayerOpen: false,
+  filtered: [],
+};
+
+const audio = document.getElementById('audioEl');
+const tg = window.Telegram?.WebApp;
+
+// ===================================================
+//  INIT
+// ===================================================
+function init() {
+  // Telegram WebApp setup
+  if (tg) {
+    tg.ready();
+    tg.expand();
+    tg.setHeaderColor('#0a0a0f');
+    tg.setBackgroundColor('#0a0a0f');
+  }
+
+  // Fill config
+  document.getElementById('channelNameEl').textContent = PODCAST_CONFIG.channelName;
+  document.getElementById('hostNameEl').textContent = PODCAST_CONFIG.hostName;
+
+  // Build categories
+  buildCategories();
+
+  // Initial render
+  filterAndRender();
+
+  // Hide loading
+  setTimeout(() => {
+    document.getElementById('loadingOverlay').classList.add('hidden');
+  }, 600);
+}
+
+// ===================================================
+//  CATEGORIES
+// ===================================================
+function buildCategories() {
+  const el = document.getElementById('categoriesEl');
+  el.innerHTML = CATEGORIES.map(c => `
+    <button class="cat-btn ${c.id === 'all' ? 'active' : ''}"
+      data-id="${c.id}" onclick="setCategory('${c.id}')">
+      ${c.icon} ${c.label}
+    </button>
+  `).join('');
+}
+
+function setCategory(id) {
+  state.category = id;
+  document.querySelectorAll('.cat-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.id === id);
+  });
+  filterAndRender();
+}
+
+// ===================================================
+//  SEARCH
+// ===================================================
+function handleSearch(val) {
+  state.search = val.trim().toLowerCase();
+  filterAndRender();
+}
+
+// ===================================================
+//  FILTER + RENDER
+// ===================================================
+function filterAndRender() {
+  let list = [...PODCASTS].sort((a, b) => b.episode - a.episode); // newest first
+
+  if (state.category !== 'all') {
+    list = list.filter(p => p.category === state.category);
+  }
+
+  if (state.search) {
+    list = list.filter(p =>
+      p.title.toLowerCase().includes(state.search) ||
+      p.description.toLowerCase().includes(state.search) ||
+      (p.tags || []).some(t => t.toLowerCase().includes(state.search))
+    );
+  }
+
+  state.filtered = list;
+
+  // Featured (latest episode when no filter active)
+  const featuredSection = document.getElementById('featuredSection');
+  if (!state.search && state.category === 'all' && list.length > 0) {
+    renderFeatured(list[0]);
+    renderList(list.slice(1));
+    featuredSection.style.display = '';
+  } else {
+    featuredSection.innerHTML = '';
+    featuredSection.style.display = 'none';
+    renderList(list);
+  }
+
+  // Update list title
+  const total = list.length;
+  document.getElementById('listTitle').textContent =
+    state.search ? `نتایج جستجو (${total})` :
+    state.category !== 'all' ? `${CATEGORIES.find(c=>c.id===state.category)?.label} (${total})` :
+    total > 0 ? `قسمت‌های قبلی` : '';
+}
+
+// ===================================================
+//  RENDER FEATURED
+// ===================================================
+function renderFeatured(p) {
+  const el = document.getElementById('featuredSection');
+  el.innerHTML = `
+    <div class="section-label">جدیدترین قسمت</div>
+    <div class="featured-card" onclick="playCast(${p.id})">
+      <div class="featured-badge">✨ قسمت ${p.episode}</div>
+      <div class="featured-title">${p.title}</div>
+      <div class="featured-desc">${p.description}</div>
+      <div class="featured-meta">
+        <div class="featured-play-btn">
+          ${state.current?.id === p.id && state.isPlaying ? '⏸ در حال پخش' : '▶ پخش'}
+        </div>
+        <div class="featured-duration">
+          <span>⏱</span> ${p.duration}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ===================================================
+//  RENDER LIST
+// ===================================================
+function renderList(list) {
+  const el = document.getElementById('podcastList');
+  if (list.length === 0) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <p>قسمتی پیدا نشد</p>
+      </div>`;
+    return;
+  }
+
+  const hues = [260, 320, 180, 40, 140, 200, 300];
+
+  el.innerHTML = list.map((p, i) => {
+    const isPlaying = state.current?.id === p.id && state.isPlaying;
+    const hue = hues[i % hues.length];
+    const catIcon = CATEGORIES.find(c => c.id === p.category)?.icon || '🎙️';
+    return `
+      <div class="podcast-item ${state.current?.id === p.id ? 'playing' : ''}"
+           onclick="playCast(${p.id})" style="--ep-hue:${hue}">
+        <div class="item-thumb ep-thumb" style="--ep-hue:${hue}">
+          ${catIcon}
+          <span class="ep-num">#${p.episode}</span>
+          ${isPlaying ? `<div class="item-playing-indicator">
+            <div class="wave-bars">
+              <div class="wave-bar"></div><div class="wave-bar"></div>
+              <div class="wave-bar"></div><div class="wave-bar"></div>
+            </div>
+          </div>` : ''}
+        </div>
+        <div class="item-info">
+          <div class="item-ep">قسمت ${p.episode}</div>
+          <div class="item-title">${p.title}</div>
+          <div class="item-meta">
+            <div class="item-date">📅 ${p.date}</div>
+            <div class="item-dur">⏱ ${p.duration}</div>
+          </div>
+          ${p.tags ? `<div class="item-tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : ''}
+        </div>
+        <div class="item-play-btn">
+          ${isPlaying ? '⏸' : '▶'}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ===================================================
+//  PLAYBACK
+// ===================================================
+function playCast(id) {
+  const podcast = PODCASTS.find(p => p.id === id);
+  if (!podcast) return;
+
+  // If same episode, toggle play/pause
+  if (state.current?.id === id) {
+    togglePlay();
+    return;
+  }
+
+  state.current = podcast;
+  state.currentIndex = state.filtered.findIndex(p => p.id === id);
+
+  // Set audio source
+  // For Telegram links we open the audio directly
+  audio.src = podcast.telegramLink;
+  audio.playbackRate = state.speed;
+  audio.play().then(() => {
+    state.isPlaying = true;
+    updateUI();
+    openFullPlayer();
+  }).catch(() => {
+    // If direct play fails, open in Telegram
+    openCurrentInTelegram();
+  });
+
+  updateMiniPlayer(podcast);
+  filterAndRender(); // re-render to show playing state
+}
+
+function togglePlay() {
+  if (!state.current) return;
+  if (state.isPlaying) {
+    audio.pause();
+    state.isPlaying = false;
+  } else {
+    audio.play();
+    state.isPlaying = true;
+  }
+  updateUI();
+}
+
+function skipForward() {
+  audio.currentTime = Math.min(audio.currentTime + 15, audio.duration || 0);
+}
+
+function skipBackward() {
+  audio.currentTime = Math.max(audio.currentTime - 15, 0);
+}
+
+function nextEpisode() {
+  if (state.currentIndex < state.filtered.length - 1) {
+    playCast(state.filtered[state.currentIndex + 1].id);
+  }
+}
+
+function prevEpisode() {
+  if (state.currentIndex > 0) {
+    playCast(state.filtered[state.currentIndex - 1].id);
+  }
+}
+
+function cycleSpeed() {
+  state.speedIdx = (state.speedIdx + 1) % state.speeds.length;
+  state.speed = state.speeds[state.speedIdx];
+  audio.playbackRate = state.speed;
+  document.getElementById('speedBtn').textContent = state.speed + '×';
+}
+
+function seekTo(e) {
+  const track = document.getElementById('seekTrack');
+  const rect = track.getBoundingClientRect();
+  // RTL: calculate from right
+  const pct = 1 - (e.clientX - rect.left) / rect.width;
+  const clamp = Math.max(0, Math.min(1, pct));
+  if (audio.duration) {
+    audio.currentTime = clamp * audio.duration;
+  }
+}
+
+// ===================================================
+//  AUDIO EVENTS
+// ===================================================
+audio.addEventListener('timeupdate', () => {
+  if (!audio.duration) return;
+  const pct = (audio.currentTime / audio.duration) * 100;
+  document.getElementById('miniProgress').style.width = pct + '%';
+  document.getElementById('seekFill').style.width = pct + '%';
+  document.getElementById('seekThumb').style.left = pct + '%';
+  document.getElementById('fpCurrent').textContent = fmtTime(audio.currentTime);
+  document.getElementById('miniTime').textContent =
+    fmtTime(audio.currentTime) + ' / ' + fmtTime(audio.duration);
+});
+
+audio.addEventListener('loadedmetadata', () => {
+  document.getElementById('fpDuration').textContent = fmtTime(audio.duration);
+});
+
+audio.addEventListener('ended', () => {
+  state.isPlaying = false;
+  updateUI();
+  nextEpisode();
+});
+
+audio.addEventListener('play', () => { state.isPlaying = true; updateUI(); });
+audio.addEventListener('pause', () => { state.isPlaying = false; updateUI(); });
+
+// ===================================================
+//  UI UPDATES
+// ===================================================
+function updateUI() {
+  const p = state.isPlaying ? '⏸' : '▶';
+  document.getElementById('miniPlayBtn').textContent = p;
+  document.getElementById('fpPlayBtn').textContent = p;
+  document.getElementById('fpCover').classList.toggle('playing', state.isPlaying);
+  filterAndRender();
+}
+
+function updateMiniPlayer(podcast) {
+  document.getElementById('miniPlayer').classList.add('visible');
+  document.getElementById('miniTitle').textContent = podcast.title;
+  document.getElementById('miniThumb').textContent =
+    CATEGORIES.find(c => c.id === podcast.category)?.icon || '🎙️';
+
+  // Update full player
+  document.getElementById('fpEpLabel').textContent = `قسمت ${podcast.episode}`;
+  document.getElementById('fpEpTitle').textContent = podcast.title;
+  document.getElementById('fpEpDesc').textContent = podcast.description;
+  document.getElementById('fpCover').textContent =
+    CATEGORIES.find(c => c.id === podcast.category)?.icon || '🎙️';
+}
+
+// ===================================================
+//  FULL PLAYER
+// ===================================================
+function openFullPlayer() {
+  document.getElementById('fullPlayer').classList.add('open');
+  state.fullPlayerOpen = true;
+}
+
+function closeFullPlayer() {
+  document.getElementById('fullPlayer').classList.remove('open');
+  state.fullPlayerOpen = false;
+}
+
+// ===================================================
+//  TELEGRAM
+// ===================================================
+function openTelegram() {
+  const url = `https://t.me/${PODCAST_CONFIG.channelUsername.replace('@', '')}`;
+  if (tg) tg.openTelegramLink(url);
+  else window.open(url, '_blank');
+}
+
+function openCurrentInTelegram() {
+  if (!state.current) return;
+  const url = state.current.telegramLink;
+  if (tg) tg.openLink(url);
+  else window.open(url, '_blank');
+}
+
+// ===================================================
+//  UTILS
+// ===================================================
+function fmtTime(s) {
+  if (!s || isNaN(s)) return '0:00';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60).toString().padStart(2, '0');
+  return `${m}:${sec}`;
+}
+
+// Back button on Telegram
+if (tg) {
+  tg.BackButton.onClick(() => {
+    if (state.fullPlayerOpen) closeFullPlayer();
+    else tg.close();
+  });
+}
+
+// Init
+init();
+</script>
+</body>
+</html>
