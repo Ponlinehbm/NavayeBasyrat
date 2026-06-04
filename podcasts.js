@@ -6,9 +6,9 @@
 
 const PODCAST_CONFIG = {
   // اطلاعات کانال شما
-  channelName: "پادکست من",
-  channelUsername: "@your_channel", // یوزرنیم کانالت
-  channelDescription: "توضیح کوتاه درباره پادکست شما",
+  channelName: "نوای بصیرت",
+  channelUsername: "@navaybasirat", // یوزرنیم کانالت
+  channelDescription: "کتب صوتی مکتبی",
   hostName: "نام مجری",
   coverImage: "", // لینک عکس کاور (اختیاری)
 };
