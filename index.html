@@ -716,7 +716,7 @@ let currentCategory = "all";
 
 // ۱. رندر دکمه‌های فیلتر (دسته‌بندی‌ها)
 function renderCategories() {
-  const catContainer = document.getElementById('categoriesContainer');
+  const catContainer = document.getElementById('categoriesEl');
   catContainer.innerHTML = CATEGORIES.map(cat => `
     <button class="filter-btn ${currentCategory === cat.id ? 'active' : ''}" 
             onclick="filterByCategory('${cat.id}')">
