@@ -6,8 +6,8 @@
 const CATALOG = [
   {
     id: "book-1",
-    title: "قدرت عادت",
-    author: "چارلز دوهیگ",
+    title: "میزان",
+    author: "آقای شریف طباطبایی",
     category: "توسعه‌فردی",
     cover: "https://via.placeholder.com/300x300/1a1a2e/e94560?text=📖",
     description: "کتابی درباره چگونگی شکل‌گیری عادت‌ها و تغییر آن‌ها در زندگی، کسب‌وکار و جامعه.",
@@ -18,7 +18,7 @@ const CATALOG = [
         title: "فصل اول: حلقه عادت",
         duration: "42:30",
         // 🔗 لینک فایل صوتی از کانال تلگرام را اینجا قرار دهید
-        audioUrl: "https://t.me/your_channel/1",
+        audioUrl: "https://t.me/navaybasirat/1006",
         telegramFileId: "", // اختیاری: File ID تلگرام
         description: "آشنایی با ساختار سه‌گانه عادت: نشانه، روتین، پاداش",
         date: "۱۴۰۳/۰۱/۱۵",
@@ -28,7 +28,7 @@ const CATALOG = [
         id: "ep-1-2",
         title: "فصل دوم: مغز و عادت‌ها",
         duration: "38:15",
-        audioUrl: "https://t.me/your_channel/2",
+        audioUrl: "https://t.me/navaybasirat/1005",
         telegramFileId: "",
         description: "بررسی نقش عقده‌های قاعده‌ای در شکل‌گیری عادت‌های خودکار",
         date: "۱۴۰۳/۰۱/۲۲",
