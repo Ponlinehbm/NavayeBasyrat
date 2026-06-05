@@ -14,7 +14,7 @@ const PODCAST_CONFIG = {
 };
 
 // =====================================================
-//  دسته‌بندی‌ها
+//  دسته‌بندی‌ها برای فیلترکردن
 // =====================================================
 const CATEGORIES = [
   { id: "all",     label: "همه",         icon: "🎙️" },
@@ -48,61 +48,27 @@ const CATEGORIES = [
 //    tags: ["تگ۱", "تگ۲"],
 //  }
 // =====================================================
+// لیست کتاب‌ها (متصل به دسته‌بندی‌ها)
+const BOOKS = [
+  { 
+    id: "book1", 
+    title: "میزان", 
+    categoryId: "eteghad", // دسته بندی
+    author: "آقای شریف طباطبایی",
+    cover: "animal_farm.jpg"
+  },
+  { 
+    id: "book2", 
+    title: "سلطانیه", 
+    categoryId: "eteghad", // دسته بندی
+    author: "حاج محمدکریم کرمانی",
+    cover: "compound_effect.jpg"
+  }
+];
 
 const PODCASTS = [
-  {
-    id: 1,
-    title: "اولین قدم در دنیای هوش مصنوعی",
-    description: "در این قسمت با مفاهیم پایه هوش مصنوعی و کاربردهای روزمره آن آشنا می‌شویم. یک مرور کلی از وضعیت فعلی AI در جهان.",
-    category: "sheikh",
-    duration: "38:45",
-    date: "۱۴۰۳/۰۳/۰۱",
-    episode: 1,
-    telegramLink: "https://s5.uupload.ir/files/arshiv/25ماه%20رمضان%201447.mp3", // ← لینک فایل از تلگرام
-    tags: ["هوش مصنوعی", "تکنولوژی", "مبتدی"],
-  },
-  {
-    id: 2,
-    title: "استارتاپ از صفر تا صد",
-    description: "چطور یک ایده را به کسب‌وکار واقعی تبدیل کنیم؟ تجربیات کارآفرینان موفق ایرانی و بین‌المللی.",
-    category: "sheikh",
-    duration: "52:10",
-    date: "۱۴۰۳/۰۳/۰۸",
-    episode: 2,
-    telegramLink: "https://t.me/your_channel/3",
-    tags: ["استارتاپ", "کارآفرینی", "موفقیت"],
-  },
-  {
-    id: 3,
-    title: "عادت‌های افراد موفق",
-    description: "بررسی عادت‌های روزانه‌ای که افراد موفق دنیا به آن‌ها پایبند هستند و نحوه پیاده‌سازی آن‌ها در زندگی.",
-    category: "sheikh",
-    duration: "41:20",
-    date: "۱۴۰۳/۰۳/۱۵",
-    episode: 3,
-    telegramLink: "https://t.me/your_channel/4",
-    tags: ["عادت", "موفقیت", "رشد فردی"],
-  },
-  {
-    id: 4,
-    title: "آینده انرژی‌های تجدیدپذیر",
-    description: "چشم‌انداز علم و صنعت در حوزه انرژی‌های پاک. از پنل خورشیدی تا باتری‌های نسل جدید.",
-    category: "sheikh",
-    duration: "47:55",
-    date: "۱۴۰۳/۰۳/۲۲",
-    episode: 4,
-    telegramLink: "https://t.me/your_channel/5",
-    tags: ["انرژی", "محیط زیست", "علم"],
-  },
-  {
-    id: 5,
-    title: "بلاک‌چین چیست و چه کاربردی دارد؟",
-    description: "نگاهی عمیق به تکنولوژی بلاک‌چین فراتر از ارزهای دیجیتال. کاربردهای واقعی در صنایع مختلف.",
-    category: "sheikh",
-    duration: "55:30",
-    date: "۱۴۰۳/۰۴/۰۱",
-    episode: 5,
-    telegramLink: "https://t.me/your_channel/6",
-    tags: ["بلاک‌چین", "تکنولوژی", "آینده"],
-  },
+ = [
+  { id: 1, bookId: "book1", episode: 1, title: "قسمت اول: معرفی", duration: "10:00", audioUrl: "..." },
+  { id: 2, bookId: "book1", episode: 2, title: "قسمت دوم: فصل اول", duration: "25:30", audioUrl: "..." },
+  { id: 3, bookId: "book2", episode: 1, title: "قسمت اول: شروع", duration: "15:00", audioUrl: "..." }
 ];
