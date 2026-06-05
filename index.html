@@ -703,376 +703,73 @@
 // ===================================================
 //  STATE
 // ===================================================
-const state = {
-  current: null,        // podcast object
-  currentIndex: -1,
-  isPlaying: false,
-  speed: 1,
-  speeds: [1, 1.25, 1.5, 1.75, 2],
-  speedIdx: 0,
-  category: 'all',
-  search: '',
-  fullPlayerOpen: false,
-  filtered: [],
-};
+// متغیر برای نگهداری دسته بندی انتخاب شده
+let currentCategory = "all";
 
-const audio = document.getElementById('audioEl');
-const tg = window.Telegram?.WebApp;
-
-// ===================================================
-//  INIT
-// ===================================================
-function init() {
-  // Telegram WebApp setup
-  if (tg) {
-    tg.ready();
-    tg.expand();
-    tg.setHeaderColor('#0a0a0f');
-    tg.setBackgroundColor('#0a0a0f');
-  }
-
-  // Fill config
-  document.getElementById('channelNameEl').textContent = PODCAST_CONFIG.channelName;
-  document.getElementById('hostNameEl').textContent = PODCAST_CONFIG.hostName;
-
-  // Build categories
-  buildCategories();
-
-  // Initial render
-  filterAndRender();
-
-  // Hide loading
-  setTimeout(() => {
-    document.getElementById('loadingOverlay').classList.add('hidden');
-  }, 600);
-}
-
-// ===================================================
-//  CATEGORIES
-// ===================================================
-function buildCategories() {
-  const el = document.getElementById('categoriesEl');
-  el.innerHTML = CATEGORIES.map(c => `
-    <button class="cat-btn ${c.id === 'all' ? 'active' : ''}"
-      data-id="${c.id}" onclick="setCategory('${c.id}')">
-      ${c.icon} ${c.label}
+// ۱. رندر دکمه‌های فیلتر (دسته‌بندی‌ها)
+function renderCategories() {
+  const catContainer = document.getElementById('categoriesContainer');
+  catContainer.innerHTML = CATEGORIES.map(cat => `
+    <button class="filter-btn ${currentCategory === cat.id ? 'active' : ''}" 
+            onclick="filterByCategory('${cat.id}')">
+      ${cat.name}
     </button>
   `).join('');
 }
 
-function setCategory(id) {
-  state.category = id;
-  document.querySelectorAll('.cat-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.id === id);
-  });
-  filterAndRender();
+// ۲. فیلتر کردن و رندر کتاب‌ها
+function filterByCategory(categoryId) {
+  currentCategory = categoryId;
+  renderCategories(); // آپدیت رنگ دکمه‌ها
+  
+  // فیلتر کردن کتاب‌ها بر اساس دسته
+  const filteredBooks = categoryId === "all" 
+    ? BOOKS 
+    : BOOKS.filter(book => book.categoryId === categoryId);
+    
+  renderBooks(filteredBooks);
 }
 
-// ===================================================
-//  SEARCH
-// ===================================================
-function handleSearch(val) {
-  state.search = val.trim().toLowerCase();
-  filterAndRender();
-}
-
-// ===================================================
-//  FILTER + RENDER
-// ===================================================
-function filterAndRender() {
-  let list = [...PODCASTS].sort((a, b) => b.episode - a.episode); // newest first
-
-  if (state.category !== 'all') {
-    list = list.filter(p => p.category === state.category);
-  }
-
-  if (state.search) {
-    list = list.filter(p =>
-      p.title.toLowerCase().includes(state.search) ||
-      p.description.toLowerCase().includes(state.search) ||
-      (p.tags || []).some(t => t.toLowerCase().includes(state.search))
-    );
-  }
-
-  state.filtered = list;
-
-  // Featured (latest episode when no filter active)
-  const featuredSection = document.getElementById('featuredSection');
-  if (!state.search && state.category === 'all' && list.length > 0) {
-    renderFeatured(list[0]);
-    renderList(list.slice(1));
-    featuredSection.style.display = '';
-  } else {
-    featuredSection.innerHTML = '';
-    featuredSection.style.display = 'none';
-    renderList(list);
-  }
-
-  // Update list title
-  const total = list.length;
-  document.getElementById('listTitle').textContent =
-    state.search ? `نتایج جستجو (${total})` :
-    state.category !== 'all' ? `${CATEGORIES.find(c=>c.id===state.category)?.label} (${total})` :
-    total > 0 ? `قسمت‌های قبلی` : '';
-}
-
-// ===================================================
-//  RENDER FEATURED
-// ===================================================
-function renderFeatured(p) {
-  const el = document.getElementById('featuredSection');
-  el.innerHTML = `
-    <div class="section-label">جدیدترین قسمت</div>
-    <div class="featured-card" onclick="playCast(${p.id})">
-      <div class="featured-badge">✨ قسمت ${p.episode}</div>
-      <div class="featured-title">${p.title}</div>
-      <div class="featured-desc">${p.description}</div>
-      <div class="featured-meta">
-        <div class="featured-play-btn">
-          ${state.current?.id === p.id && state.isPlaying ? '⏸ در حال پخش' : '▶ پخش'}
-        </div>
-        <div class="featured-duration">
-          <span>⏱</span> ${p.duration}
-        </div>
-      </div>
+// ۳. رندر شبکه کتاب‌ها
+function renderBooks(booksToRender) {
+  document.getElementById('episodesView').style.display = 'none';
+  document.getElementById('booksGrid').style.display = 'grid';
+  document.getElementById('categoriesContainer').style.display = 'flex'; // نمایش فیلترها
+  
+  const booksGrid = document.getElementById('booksGrid');
+  booksGrid.innerHTML = booksToRender.map(book => `
+    <div class="book-card" onclick="openBook('${book.id}')">
+      <img src="${book.cover}" alt="${book.title}" style="width:100%; border-radius:8px;">
+      <h3>${book.title}</h3>
+      <p>${book.author}</p>
     </div>
-  `;
+  `).join('');
 }
 
-// ===================================================
-//  RENDER LIST
-// ===================================================
-function renderList(list) {
-  const el = document.getElementById('podcastList');
-  if (list.length === 0) {
-    el.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🔍</div>
-        <p>قسمتی پیدا نشد</p>
-      </div>`;
-    return;
-  }
-
-  const hues = [260, 320, 180, 40, 140, 200, 300];
-
-  el.innerHTML = list.map((p, i) => {
-    const isPlaying = state.current?.id === p.id && state.isPlaying;
-    const hue = hues[i % hues.length];
-    const catIcon = CATEGORIES.find(c => c.id === p.category)?.icon || '🎙️';
-    return `
-      <div class="podcast-item ${state.current?.id === p.id ? 'playing' : ''}"
-           onclick="playCast(${p.id})" style="--ep-hue:${hue}">
-        <div class="item-thumb ep-thumb" style="--ep-hue:${hue}">
-          ${catIcon}
-          <span class="ep-num">#${p.episode}</span>
-          ${isPlaying ? `<div class="item-playing-indicator">
-            <div class="wave-bars">
-              <div class="wave-bar"></div><div class="wave-bar"></div>
-              <div class="wave-bar"></div><div class="wave-bar"></div>
-            </div>
-          </div>` : ''}
-        </div>
-        <div class="item-info">
-          <div class="item-ep">قسمت ${p.episode}</div>
-          <div class="item-title">${p.title}</div>
-          <div class="item-meta">
-            <div class="item-date">📅 ${p.date}</div>
-            <div class="item-dur">⏱ ${p.duration}</div>
-          </div>
-          ${p.tags ? `<div class="item-tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : ''}
-        </div>
-        <div class="item-play-btn">
-          ${isPlaying ? '⏸' : '▶'}
-        </div>
-      </div>
-    `;
-  }).join('');
+// ۴. باز کردن کتاب و نمایش قسمت‌ها
+function openBook(bookId) {
+  // مخفی کردن کتاب‌ها و فیلترها
+  document.getElementById('booksGrid').style.display = 'none';
+  document.getElementById('categoriesContainer').style.display = 'none'; 
+  
+  // نمایش بخش قسمت‌ها
+  document.getElementById('episodesView').style.display = 'block';
+  
+  const book = BOOKS.find(b => b.id === bookId);
+  document.getElementById('currentBookTitle').innerText = book.title;
+  
+  // گرفتن قسمت‌های این کتاب و رندر کردن آن‌ها
+  const bookEpisodes = PODCASTS.filter(p => p.bookId === bookId);
+  bookEpisodes.sort((a, b) => a.episode - b.episode);
+  
+  // در اینجا از تابع فعلی شما برای رندر لیست قسمت‌ها استفاده می‌شود
+  renderEpisodesList(bookEpisodes); 
 }
 
-// ===================================================
-//  PLAYBACK
-// ===================================================
-function playCast(id) {
-  const podcast = PODCASTS.find(p => p.id === id);
-  if (!podcast) return;
+// مقداردهی اولیه برنامه
+renderCategories();
+filterByCategory('all');
 
-  // If same episode, toggle play/pause
-  if (state.current?.id === id) {
-    togglePlay();
-    return;
-  }
-
-  state.current = podcast;
-  state.currentIndex = state.filtered.findIndex(p => p.id === id);
-
-  // Set audio source
-  // For Telegram links we open the audio directly
-  audio.src = podcast.telegramLink;
-  audio.playbackRate = state.speed;
-  audio.play().then(() => {
-    state.isPlaying = true;
-    updateUI();
-    openFullPlayer();
-  }).catch(() => {
-    // If direct play fails, open in Telegram
-    openCurrentInTelegram();
-  });
-
-  updateMiniPlayer(podcast);
-  filterAndRender(); // re-render to show playing state
-}
-
-function togglePlay() {
-  if (!state.current) return;
-  if (state.isPlaying) {
-    audio.pause();
-    state.isPlaying = false;
-  } else {
-    audio.play();
-    state.isPlaying = true;
-  }
-  updateUI();
-}
-
-function skipForward() {
-  audio.currentTime = Math.min(audio.currentTime + 15, audio.duration || 0);
-}
-
-function skipBackward() {
-  audio.currentTime = Math.max(audio.currentTime - 15, 0);
-}
-
-function nextEpisode() {
-  if (state.currentIndex < state.filtered.length - 1) {
-    playCast(state.filtered[state.currentIndex + 1].id);
-  }
-}
-
-function prevEpisode() {
-  if (state.currentIndex > 0) {
-    playCast(state.filtered[state.currentIndex - 1].id);
-  }
-}
-
-function cycleSpeed() {
-  state.speedIdx = (state.speedIdx + 1) % state.speeds.length;
-  state.speed = state.speeds[state.speedIdx];
-  audio.playbackRate = state.speed;
-  document.getElementById('speedBtn').textContent = state.speed + '×';
-}
-
-function seekTo(e) {
-  const track = document.getElementById('seekTrack');
-  const rect = track.getBoundingClientRect();
-  // RTL: calculate from right
-  const pct = 1 - (e.clientX - rect.left) / rect.width;
-  const clamp = Math.max(0, Math.min(1, pct));
-  if (audio.duration) {
-    audio.currentTime = clamp * audio.duration;
-  }
-}
-
-// ===================================================
-//  AUDIO EVENTS
-// ===================================================
-audio.addEventListener('timeupdate', () => {
-  if (!audio.duration) return;
-  const pct = (audio.currentTime / audio.duration) * 100;
-  document.getElementById('miniProgress').style.width = pct + '%';
-  document.getElementById('seekFill').style.width = pct + '%';
-  document.getElementById('seekThumb').style.left = pct + '%';
-  document.getElementById('fpCurrent').textContent = fmtTime(audio.currentTime);
-  document.getElementById('miniTime').textContent =
-    fmtTime(audio.currentTime) + ' / ' + fmtTime(audio.duration);
-});
-
-audio.addEventListener('loadedmetadata', () => {
-  document.getElementById('fpDuration').textContent = fmtTime(audio.duration);
-});
-
-audio.addEventListener('ended', () => {
-  state.isPlaying = false;
-  updateUI();
-  nextEpisode();
-});
-
-audio.addEventListener('play', () => { state.isPlaying = true; updateUI(); });
-audio.addEventListener('pause', () => { state.isPlaying = false; updateUI(); });
-
-// ===================================================
-//  UI UPDATES
-// ===================================================
-function updateUI() {
-  const p = state.isPlaying ? '⏸' : '▶';
-  document.getElementById('miniPlayBtn').textContent = p;
-  document.getElementById('fpPlayBtn').textContent = p;
-  document.getElementById('fpCover').classList.toggle('playing', state.isPlaying);
-  filterAndRender();
-}
-
-function updateMiniPlayer(podcast) {
-  document.getElementById('miniPlayer').classList.add('visible');
-  document.getElementById('miniTitle').textContent = podcast.title;
-  document.getElementById('miniThumb').textContent =
-    CATEGORIES.find(c => c.id === podcast.category)?.icon || '🎙️';
-
-  // Update full player
-  document.getElementById('fpEpLabel').textContent = `قسمت ${podcast.episode}`;
-  document.getElementById('fpEpTitle').textContent = podcast.title;
-  document.getElementById('fpEpDesc').textContent = podcast.description;
-  document.getElementById('fpCover').textContent =
-    CATEGORIES.find(c => c.id === podcast.category)?.icon || '🎙️';
-}
-
-// ===================================================
-//  FULL PLAYER
-// ===================================================
-function openFullPlayer() {
-  document.getElementById('fullPlayer').classList.add('open');
-  state.fullPlayerOpen = true;
-}
-
-function closeFullPlayer() {
-  document.getElementById('fullPlayer').classList.remove('open');
-  state.fullPlayerOpen = false;
-}
-
-// ===================================================
-//  TELEGRAM
-// ===================================================
-function openTelegram() {
-  const url = `https://t.me/${PODCAST_CONFIG.channelUsername.replace('@', '')}`;
-  if (tg) tg.openTelegramLink(url);
-  else window.open(url, '_blank');
-}
-
-function openCurrentInTelegram() {
-  if (!state.current) return;
-  const url = state.current.telegramLink;
-  if (tg) tg.openLink(url);
-  else window.open(url, '_blank');
-}
-
-// ===================================================
-//  UTILS
-// ===================================================
-function fmtTime(s) {
-  if (!s || isNaN(s)) return '0:00';
-  const m = Math.floor(s / 60);
-  const sec = Math.floor(s % 60).toString().padStart(2, '0');
-  return `${m}:${sec}`;
-}
-
-// Back button on Telegram
-if (tg) {
-  tg.BackButton.onClick(() => {
-    if (state.fullPlayerOpen) closeFullPlayer();
-    else tg.close();
-  });
-}
-
-// Init
-init();
 </script>
 </body>
 </html>
