@@ -7,7 +7,7 @@ const CATALOG = [
   {
     id: "book-1",
     title: "میزان",
-    author: "مرحوم حاج میرزا محمدباقر شریف طباطبایی اعلی الله مقامه",
+    author: "مرحوم حاج میرزا محمدباقر شریف طباطبایی",
     category: "اعتقادی",
     cover: "image/test.png",
     description: "",
