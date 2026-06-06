@@ -478,7 +478,18 @@ function init() {
   }, 600);
 }
 document.addEventListener("DOMContentLoaded", function() {
+  try {
     init();
-});
+  } catch (e) {
+    console.error("Initialization failed:", e);
+  }
 
+  setTimeout(() => {
+    const loader = document.getElementById('app-loader');
+    if (loader) {
+      loader.style.opacity = '0';
+      setTimeout(() => loader.remove(), 300);
+    }
+  }, 1000);
+});
 
