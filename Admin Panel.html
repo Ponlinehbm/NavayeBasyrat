@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت محتوا | نوای بصیرت</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --success-hover: #059669;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+        }
+
+        body { font-family: 'Vazirmatn', Tahoma, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 40px 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 1.8rem; color: var(--primary); margin-bottom: 5px; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        .card-title { font-size: 1.2rem; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-bottom: 20px; color: var(--text-main); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group.full-width { grid-column: span 2; }
+        label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
+        input, textarea, select { width: 100%; padding: 10px 12px; font-family: inherit; border: 1px solid var(--border); border-radius: 8px; background-color: #f9fafb; transition: all 0.3s ease; box-sizing: border-box; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); background-color: #fff; }
+        button { font-family: inherit; font-weight: 600; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        button:active { transform: scale(0.98); }
+        .btn-primary { background-color: var(--primary); color: white; width: 100%; font-size: 1.1rem; margin-top: 10px; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-success { background-color: var(--success); color: white; margin-bottom: 15px; }
+        .btn-success:hover { background-color: var(--success-hover); }
+        
+        /* استایل دکمه کپی */
+        .btn-copy { background-color: #374151; color: white; margin-top: 15px; width: 100%; font-size: 1rem; }
+        .btn-copy:hover { background-color: #1f2937; }
+        .btn-copy.copied { background-color: var(--success); }
+
+        .episode-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 15px; position: relative; }
+        .episode-badge { position: absolute; top: -10px; right: 20px; background: var(--primary); color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+        .auto-fill-box { background: #e0e7ff; border: 1px dashed #4f46e5; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        .auto-fill-box input[type="file"] { background: white; margin-top: 10px; }
+        #output { width: 100%; height: 250px; background-color: #1e293b; color: #38bdf8; font-family: monospace; font-size: 14px; padding: 15px; border-radius: 8px; direction: ltr; text-align: left; border: none; resize: vertical; }
+        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } .form-group.full-width { grid-column: span 1; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>پنل ورود اطلاعات نوای بصیرت</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">استخراج خودکار زمان و نام از فایل‌های صوتی</p>
+    </div>
+
+    <!-- بخش اطلاعات کتاب -->
+    <div class="card">
+        <h2 class="card-title">مشخصات اصلی کتاب / پادکست</h2>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>شناسه یکتا (id)</label>
+                <input type="text" id="book-id" placeholder="مثلا: book-12">
+            </div>
+            <div class="form-group">
+                <label>عنوان</label>
+                <input type="text" id="book-title" placeholder="نام کتاب یا مجموعه">
+            </div>
+            <div class="form-group">
+                <label>نویسنده / گوینده</label>
+                <select id="book-author">
+                    <option value="مرحوم شیخ احمد احسائی اعلی الله مقامه">مرحوم شیخ احمد احسائی اعلی الله مقامه</option>
+                    <option value="مرحوم سید محمدکاظم حسینی رشتی">مرحوم سید محمدکاظم حسینی رشتی</option>
+                    <option value="مرحوم حاج محمدکریم کرمانی اعلی الله مقامه">مرحوم حاج محمدکریم کرمانی اعلی الله مقامه</option>
+                    <option value="مرحوم حاج میرزا محمدباقر شریف طباطبایی اعلی الله مقامه">مرحوم حاج میرزا محمدباقر شریف طباطبایی اعلی الله مقامه</option>
+                    <option value="حاج سید احمد موسویان">حاج سید احمد موسویان</option>
+                    <option value="حاج سید محمدصادق موسوی">حاج سید محمدصادق موسوی</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>دسته‌بندی (Category)</label>
+                <select id="book-category">
+                    <option value="اعتقادی">اعتقادی</option>
+                    <option value="فضائل">فضائل</option>
+                    <option value="تاریخی">تاریخی</option>
+                    <option value="جوابیه به سوالات">جوابیه به سوالات</option>
+                </select>
+            </div>
+            <div class="form-group full-width">
+                <label>مسیر تصویر جلد (cover)</label>
+                <input type="text" id="book-cover" placeholder="assets/images/cover.jpg" dir="ltr">
+            </div>
+            <div class="form-group full-width">
+                <label>توضیحات کلی</label>
+                <textarea id="book-desc" rows="3" placeholder="توضیح مختصری درباره این مجموعه..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- بخش اپیزودها -->
+    <div class="card">
+        <h2 class="card-title">لیست قسمت‌ها (اپیزودها)</h2>
+        <div id="episodes-container"></div>
+        <button type="button" class="btn-success" onclick="addEpisodeForm()">
+            <span>+</span> افزودن قسمت جدید
+        </button>
+    </div>
+
+    <button type="button" class="btn-primary" onclick="generateJSON()">تولید کد نهایی</button>
+
+    <!-- بخش خروجی -->
+    <div class="card" style="margin-top: 25px;">
+        <h2 class="card-title">خروجی کد</h2>
+        <div class="output-wrapper">
+            <textarea id="output" readonly placeholder="کد تولید شده اینجا نمایش داده می‌شود..."></textarea>
+            <button type="button" id="copy-btn" class="btn-copy" onclick="copyCode()">📋 کپی کردن کدها</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let episodeCount = 0;
+
+    function addEpisodeForm() {
+        episodeCount++;
+        const container = document.getElementById('episodes-container');
+        const epDiv = document.createElement('div');
+        epDiv.className = 'episode-card';
+        epDiv.id = `ep-${episodeCount}`;
+        epDiv.innerHTML = `
+            <div class="episode-badge">قسمت ${episodeCount}</div>
+            
+            <div class="auto-fill-box form-group full-width">
+                <label style="color: var(--primary);">⚡ پر کردن خودکار اطلاعات</label>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">فایل صوتی این قسمت را انتخاب کنید تا نام و مدت زمان آن استخراج شود (فایل آپلود نمی‌شود)</span>
+                <input type="file" accept="audio/*" onchange="analyzeAudio(this, ${episodeCount})">
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>شناسه (id)</label>
+                    <input type="text" class="ep-id" placeholder="مثلا: ep-12-1" dir="ltr">
+                </div>
+                <div class="form-group">
+                    <label>عنوان قسمت</label>
+                    <input type="text" class="ep-title" placeholder="مثلا: بخش اول">
+                </div>
+                <div class="form-group">
+                    <label>مدت زمان</label>
+                    <input type="text" class="ep-duration" placeholder="12:45" dir="ltr">
+                </div>
+                <div class="form-group">
+                    <label>تاریخ انتشار</label>
+                    <input type="text" class="ep-date" placeholder="1405/03/16" dir="ltr">
+                </div>
+                <div class="form-group full-width">
+                    <label>لینک فایل صوتی</label>
+                    <input type="text" class="ep-audio" placeholder="لینک مستقیم یا لینک تلگرام..." dir="ltr">
+                </div>
+                <div class="form-group full-width">
+                    <label>توضیحات</label>
+                    <input type="text" class="ep-desc" placeholder="خلاصه این قسمت...">
+                </div>
+                <div class="form-group">
+                    <label>برچسب "جدید"؟</label>
+                    <select class="ep-isnew">
+                        <option value="false">خیر</option>
+                        <option value="true">بله</option>
+                    </select>
+                </div>
+            </div>
+        `;
+        container.appendChild(epDiv);
+    }
+
+    // تابع آنالیز فایل صوتی
+    function analyzeAudio(inputElement, epId) {
+        const file = inputElement.files[0];
+        if (!file) return;
+
+        const epDiv = document.getElementById(`ep-${epId}`);
+        
+        // استخراج نام فایل (بدون پسوند) برای عنوان
+        const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+        epDiv.querySelector('.ep-title').value = fileNameWithoutExt;
+
+        // ساخت یک شیء صوتی موقت برای خواندن مدت زمان
+        const audio = new Audio();
+        audio.src = URL.createObjectURL(file);
+        
+        audio.onloadedmetadata = function() {
+            // محاسبه دقیقه و ثانیه
+            const totalSeconds = Math.floor(audio.duration);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            
+            // فرمت دهی به صورت MM:SS
+            const formattedDuration = 
+                String(minutes).padStart(2, '0') + ':' + 
+                String(seconds).padStart(2, '0');
+                
+            epDiv.querySelector('.ep-duration').value = formattedDuration;
+            
+            // پاکسازی حافظه
+            URL.revokeObjectURL(audio.src);
+        };
+    }
+
+    function generateJSON() {
+        const episodes = [];
+        for (let i = 1; i <= episodeCount; i++) {
+            const epDiv = document.getElementById(`ep-${i}`);
+            if (epDiv) {
+                episodes.push({
+                    id: epDiv.querySelector('.ep-id').value,
+                    title: epDiv.querySelector('.ep-title').value,
+                    duration: epDiv.querySelector('.ep-duration').value,
+                    audioUrl: epDiv.querySelector('.ep-audio').value,
+                    telegramFileId: "", 
+                    description: epDiv.querySelector('.ep-desc').value,
+                    date: epDiv.querySelector('.ep-date').value,
+                    isNew: epDiv.querySelector('.ep-isnew').value === 'true'
+                });
+            }
+        }
+
+        const bookData = {
+            id: document.getElementById('book-id').value,
+            title: document.getElementById('book-title').value,
+            author: document.getElementById('book-author').value,
+            category: document.getElementById('book-category').value,
+            cover: document.getElementById('book-cover').value,
+            description: document.getElementById('book-desc').value,
+            totalEpisodes: episodes.length,
+            episodes: episodes
+        };
+
+        const outputStr = ",\n" + JSON.stringify(bookData, null, 4);
+        const outputBox = document.getElementById('output');
+        outputBox.value = outputStr;
+        
+        outputBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // ریست کردن ظاهر دکمه کپی در صورت تولید کد جدید
+        const copyBtn = document.getElementById('copy-btn');
+        copyBtn.innerHTML = '📋 کپی کردن کدها';
+        copyBtn.classList.remove('copied');
+    }
+
+    // تابع کپی کردن متن
+    function copyCode() {
+        const outputBox = document.getElementById('output');
+        const copyBtn = document.getElementById('copy-btn');
+        
+        if (!outputBox.value) {
+            alert("ابتدا دکمه «تولید کد نهایی» را بزنید تا کدی برای کپی وجود داشته باشد.");
+            return;
+        }
+
+        navigator.clipboard.writeText(outputBox.value).then(() => {
+            copyBtn.innerHTML = '✅ کپی شد!';
+            copyBtn.classList.add('copied');
+            
+            // بازگشت به حالت اولیه بعد از 2.5 ثانیه
+            setTimeout(() => {
+                copyBtn.innerHTML = '📋 کپی کردن کدها';
+                copyBtn.classList.remove('copied');
+            }, 2500);
+        }).catch(err => {
+            console.error('خطا در کپی: ', err);
+            // روش پشتیبان برای مرورگرهای قدیمی‌تر
+            outputBox.select();
+            document.execCommand('copy');
+            copyBtn.innerHTML = '✅ کپی شد!';
+            copyBtn.classList.add('copied');
+        });
+    }
+
+    addEpisodeForm();
+</script>
+
+</body>
+</html>
