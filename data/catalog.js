@@ -9,7 +9,7 @@ const CATALOG = [
     title: "میزان",
     author: "آقای شریف طباطبایی",
     category: "اعتقادی",
-    cover: "https://via.placeholder.com/300x300/1a1a2e/e94560?text=📖",
+    cover: "image/test.png",
     description: "",
     totalEpisodes: 20,
     episodes: [
