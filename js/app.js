@@ -34,15 +34,17 @@ function bookEmoji(id) {
 function renderHome() {
   const { category, query } = State.filter;
 
-  let books = CATALOG.filter(b => {
-    const matchCat = category === 'همه' || b.category === category;
-    const matchAuthor = State.filter.author === 'all' || b.author === State.filter.author;
-    const query = State.filter.query.toLowerCase();
-    const matchSearch = query === '' || 
-      b.title.includes(query) ||
-      b.author.includes(query) ||
-      b.category.includes(query);
-      return matchCat && matchAuthor && matchSearch;
+    const books = CATALOG.filter(b => {
+        const matchCat = State.filter.category === 'همه' || b.category === State.filter.category;
+        const matchAuthor = State.filter.author === 'همه' || b.author === State.filter.author;
+        
+        const query = State.filter.query.toLowerCase();
+        const matchSearch = query === '' || 
+            b.title.toLowerCase().includes(query) || 
+            b.author.toLowerCase().includes(query) || 
+            b.category.toLowerCase().includes(query);
+            
+        return matchCat && matchAuthor && matchSearch;
   });
 
   const hasNew = b => b.episodes.some(e => e.isNew);
@@ -377,6 +379,29 @@ function onProgressClick(e) {
 /* ── فیلترهای دسته‌بندی ── */
 function setupFilters() {
   const bar = document.getElementById('filter-bar');
+    const authorBar = document.getElementById('author-bar');
+    if (!authorBar) return;
+
+    // استخراج لیست گویندگان یکتا از کاتالوگ
+    const authors = ['همه', ...new Set(CATALOG.map(b => b.author))];
+
+    // ساخت دکمه‌ها (مشابه کلاس‌های فیلتر موضوعی)
+    authorBar.innerHTML = authors.map(author => `
+        <button class="filter-btn ${State.filter.author === author ? 'active' : ''}" 
+                data-author="${author}">
+            ${author}
+        </button>
+    `).join('');
+
+    // مدیریت کلیک روی دکمه‌ها
+    authorBar.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            authorBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            State.filter.author = e.target.dataset.author;
+            renderHome();
+        });
+    });
   bar.innerHTML = '';
   CATEGORIES.forEach(cat => {
     const chip = document.createElement('button');
@@ -413,10 +438,11 @@ function initTelegram() {
 
 /* ── راه‌اندازی ── */
 function init() {
-  initTelegram();
-  setupFilters();
-  setupSearch();
-  renderHome();
+    initTelegram();
+    setupFilters();
+    setupAuthorFilters();
+    setupSearch();
+    renderHome();
 
   // دکمه بازگشت
   document.getElementById('back-btn').addEventListener('click', goHome);
