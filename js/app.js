@@ -17,6 +17,7 @@ const State = {
   },
   filter: {
     category: 'همه',
+    author: 'همه',
     query: '',
   },
   audio: null,
@@ -35,11 +36,13 @@ function renderHome() {
 
   let books = CATALOG.filter(b => {
     const matchCat = category === 'همه' || b.category === category;
-    const matchQ   = !query ||
+    const matchAuthor = State.filter.author === 'all' || b.author === State.filter.author;
+    const query = State.filter.query.toLowerCase();
+    const matchSearch = query === '' || 
       b.title.includes(query) ||
       b.author.includes(query) ||
       b.category.includes(query);
-    return matchCat && matchQ;
+      return matchCat && matchAuthor && matchSearch;
   });
 
   const hasNew = b => b.episodes.some(e => e.isNew);
@@ -445,4 +448,7 @@ function init() {
   }, 600);
 }
 
-document.addEventListener('DOMContentLoaded', init);
+document.getElementById('author-filter').addEventListener('change', (e) => {
+    State.filter.author = e.target.value;
+    renderHome();
+});
