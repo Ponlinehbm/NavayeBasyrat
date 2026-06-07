@@ -581,6 +581,9 @@
       <button class="nav-item" onclick="window.open('index.html','_blank')">
         <span class="nav-icon">🌐</span> نمایش سایت
       </button>
+      <button class="nav-item" onclick="resetToDefault()" style="color:var(--danger);margin-top:8px;">
+        <span class="nav-icon">🔄</span> بازنشانی به اطلاعات اولیه
+      </button>
     </nav>
   </aside>
 
@@ -784,7 +787,27 @@
 
 <script>
 // ── وضعیت کاری ──
-let workingCatalog = JSON.parse(JSON.stringify(CATALOG));
+const STORAGE_KEY = 'navaye_basyrat_catalog';
+
+function loadCatalog() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(CATALOG));
+}
+
+function saveCatalog() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(workingCatalog));
+  } catch(e) {
+    alert('خطا در ذخیره‌سازی: ' + e.message);
+  }
+}
+
+let workingCatalog = loadCatalog();
 
 const COVER_EMOJIS = ['📗','📘','📙','📕','📔','📒','📚','🔖'];
 function bookEmoji(id) {
@@ -1019,6 +1042,7 @@ function addEpisode() {
   });
   book.totalEpisodes = book.episodes.length;
 
+  saveCatalog();
   showAlert('ep-alert-success');
   clearEpForm();
   renderDashboard();
@@ -1061,6 +1085,7 @@ function addBook() {
     episodes: []
   });
 
+  saveCatalog();
   showAlert('book-alert-success');
   clearBookForm();
   renderDashboard();
@@ -1122,6 +1147,7 @@ function renderManage() {
 function deleteBook(bookId) {
   if (!confirm('آیا مطمئنید؟ کتاب و همه اپیزودهایش حذف می‌شوند.')) return;
   workingCatalog = workingCatalog.filter(b => b.id !== bookId);
+  saveCatalog();
   renderManage();
 }
 
@@ -1131,6 +1157,7 @@ function deleteEpisode(bookId, epId) {
   if (!book) return;
   book.episodes = book.episodes.filter(e => e.id !== epId);
   book.totalEpisodes = book.episodes.length;
+  saveCatalog();
   renderManage();
 }
 
@@ -1182,6 +1209,15 @@ function showAlert(id) {
 }
 function hideAlerts() {
   document.querySelectorAll('.alert').forEach(a => a.classList.remove('show'));
+}
+
+// ── بازنشانی ──
+function resetToDefault() {
+  if (!confirm('آیا مطمئنید؟ تمام تغییرات شما پاک می‌شود و اطلاعات اولیه catalog.js بازمی‌گردد.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  workingCatalog = JSON.parse(JSON.stringify(CATALOG));
+  renderDashboard();
+  alert('بازنشانی انجام شد.');
 }
 
 // ── شروع ──
