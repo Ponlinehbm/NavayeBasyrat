@@ -22,7 +22,7 @@ podcast-miniapp/
 
 ## 🚀 راه‌اندازی روی GitHub Pages
 
-### مرحله ۱ — ساخت ریپو
+### مممرحله ۱ — ساخت ریپو
 1. وارد [github.com](https://github.com) شوید
 2. روی **New repository** کلیک کنید
 3. نام مثلاً `podcast-app` بگذارید
