@@ -1,120 +1,51 @@
 // ============================================================
 //  📚 کاتالوگ کتاب‌ها و اپیزودها
 //  ویرایش‌شده با پنل مدیریت نوای بصیرت
-//  آخرین به‌روزرسانی: ۱۴۰۵/۳/۱۷, ۱۶:۴۸:۱۵
+//  آخرین به‌روزرسانی: ۱۴۰۵/۳/۱۹, ۱۸:۴۷:۰۵
 // ============================================================
 
 const CATALOG = [
   {
-    "id": "book-1",
-    "title": "میزان",
-    "author": "مرحوم حاج میرزا محمدباقر شریف طباطبایی",
-    "category": "اعتقادی",
-    "cover": "image/test.png",
+    "id": "book-4",
+    "title": "سی فصل",
+    "author": "مرحوم حاج میرزا محمدکریم کرمانی",
+    "category": "جوابیه",
+    "cover": "",
     "description": "",
-    "totalEpisodes": 20,
-    "episodes": [
-      {
-        "id": "ep-1-1",
-        "title": "فصل اول",
-        "duration": "42:30",
-        "audioUrl": "https://t.me/navaybasirat/1006",
-        "telegramFileId": "",
-        "description": "",
-        "date": "۱۴۰۳/۰۱/۱۵",
-        "isNew": true
-      },
-      {
-        "id": "ep-1-2",
-        "title": "فصل دوم",
-        "duration": "38:15",
-        "audioUrl": "https://t.me/navaybasirat/1005",
-        "telegramFileId": "",
-        "description": "",
-        "date": "۱۴۰۳/۰۱/۲۲",
-        "isNew": false
-      },
-      {
-        "id": "ep-1-3",
-        "title": "فصل سوم",
-        "duration": "45:00",
-        "audioUrl": "https://t.me/navaybasirat/1004",
-        "telegramFileId": "",
-        "description": "",
-        "date": "۱۴۰۳/۰۱/۲۹",
-        "isNew": false
-      }
-    ]
-  },
-  {
-    "id": "book-2",
-    "title": "سلطانیه",
-    "author": "حاج محمد کریم کرمانی ",
-    "category": "اعتقادی",
-    "cover": "https://via.placeholder.com/300x300/0f3460/e94560?text=🧠",
-    "description": ".",
-    "totalEpisodes": 150,
-    "episodes": [
-      {
-        "id": "ep-2-1",
-        "title": "فصل 1",
-        "duration": "50:20",
-        "audioUrl": "https://t.me/your_channel/4",
-        "telegramFileId": "",
-        "description": "معرفی دو نوع تفکر: اتوماتیک و تحلیلی",
-        "date": "۱۴۰۳/۰۲/۰۵",
-        "isNew": true
-      },
-      {
-        "id": "ep-2-2",
-        "title": "فصل دوم",
-        "duration": "47:10",
-        "audioUrl": "https://t.me/your_channel/5",
-        "telegramFileId": "",
-        "description": "بررسی رایج‌ترین اشتباهات ذهنی که روزانه مرتکب می‌شویم",
-        "date": "۱۴۰۳/۰۲/۱۲",
-        "isNew": false
-      }
-    ]
-  },
-  {
-    "id": "book-3",
-    "title": "شرح الزیارة الجامعة الکبیرة",
-    "author": "شیخ احمد بن زین الدین احسائی",
-    "category": "فضائل",
-    "cover": "https://via.placeholder.com/300x300/16213e/53c0f0?text=✨",
-    "description": ".",
     "totalEpisodes": 3,
     "episodes": [
       {
-        "id": "ep-3-1",
-        "title": "اصل‌گرایی چیست؟",
-        "duration": "35:45",
-        "audioUrl": "https://t.me/your_channel/6",
-        "telegramFileId": "",
-        "description": "تعریف اصل‌گرایی و تفاوت آن با مینیمالیسم",
-        "date": "۱۴۰۳/۰۳/۰۱",
-        "isNew": false
-      },
-      {
-        "id": "ep-3-2",
-        "title": "نه گفتن با احترام",
-        "duration": "39:00",
-        "audioUrl": "https://t.me/your_channel/7",
-        "telegramFileId": "",
-        "description": "چگونه به درخواست‌های غیرضروری نه بگوییم بدون آسیب به روابط",
-        "date": "۱۴۰۳/۰۳/۰۸",
+        "id": "ep-4-1",
+        "title": "سی فصل",
+        "duration": "3:03",
+        "audioUrl": "https://t.me/navaybasirat/229",
+        "telegramFileId": "CQACAgQAAx0CU3ncCAAD5WooHm3PINyvAAHz53hx_OohkcvQ1gACsBIAAkZUoVBag8xCea-ifjsE",
+        "performer": "حامد جابری",
+        "description": "🎧رساله سی فصل \n🔹مقدمه\n#سی_فصل\n#آقای_مرحوم\n#حامد_جابری\n\n@navaybasirat",
+        "date": "۱۴۰۵/۰۳/۱۹",
         "isNew": true
       },
       {
-        "id": "ep-3-33",
-        "title": "فصل 4",
-        "duration": "5:12",
-        "audioUrl": "https://t.me/algod1992/16416",
-        "telegramFileId": "",
-        "description": "",
-        "date": "۱۴۰۵/۰۳/۱۷",
-        "isNew": false
+        "id": "ep-4-42",
+        "title": "سی فصل",
+        "duration": "14:40",
+        "audioUrl": "https://t.me/navaybasirat/230",
+        "telegramFileId": "CQACAgQAAx0CU3ncCAAD5mooHm0mbSZojP4vqgABZo7ojmt2EwACshIAAkZUoVBKo5T-1voWmTsE",
+        "performer": "حامد جابری",
+        "description": "🎧رساله سی فصل \n🔹عبارت سؤال\n#سی_فصل\n#آقای_مرحوم\n#حامد_جابری\n\n@navaybasirat",
+        "date": "۱۴۰۵/۰۳/۱۹",
+        "isNew": true
+      },
+      {
+        "id": "ep-4-443",
+        "title": "سی فصل",
+        "duration": "11:34",
+        "audioUrl": "https://t.me/navaybasirat/231",
+        "telegramFileId": "CQACAgQAAx0CU3ncCAAD52ooHm7mug8-1BgoyEIyNHDUOmT6AAKzEgACRlShUHNB_YywGnghOwQ",
+        "performer": "حامد جابری",
+        "description": "🎧رساله سی فصل \n🔹فصل اول:در جواب مسأله اول که اصول دین باشد\n#سی_فصل\n#آقای_مرحوم\n#حامد_جابری\n\n@navaybasirat",
+        "date": "۱۴۰۵/۰۳/۱۹",
+        "isNew": true
       }
     ]
   }
@@ -122,4 +53,3 @@ const CATALOG = [
 
 // دسته‌بندی‌های موجود
 const CATEGORIES = ["همه", ...new Set(CATALOG.map(b => b.category))];
-
