@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>پنل مدیریت — نوای بصیرت</title>
+  <link rel="icon" href="image/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep:       #0a0a0f;
+      --bg-card:       #111118;
+      --bg-surface:    #1a1a28;
+      --bg-elevated:   #22223a;
+      --accent:        #7c6aff;
+      --accent-glow:   rgba(124,106,255,0.18);
+      --accent-soft:   #a594ff;
+      --gold:          #f0c040;
+      --text-primary:  #f0eff8;
+      --text-secondary:#9896b8;
+      --text-muted:    #5a5880;
+      --border:        #2a2845;
+      --border-bright: #3d3a6a;
+      --success:       #3ecf8e;
+      --danger:        #ff6b6b;
+      --radius-sm:     8px;
+      --radius-md:     14px;
+      --radius-lg:     20px;
+      --font:          'Vazirmatn', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      direction: rtl;
+      min-height: 100vh;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    /* ── لایه‌اوت اصلی ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── سایدبار ── */
+    .sidebar {
+      background: var(--bg-card);
+      border-left: 1px solid var(--border);
+      padding: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo .logo-icon { font-size: 2rem; }
+    .sidebar-logo .logo-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 6px;
+    }
+    .sidebar-logo .logo-sub {
+      font-size: 0.75rem;
+      color: var(--accent-soft);
+      letter-spacing: 0.05em;
+    }
+
+    .sidebar-nav {
+      padding: 16px 12px;
+      flex: 1;
+    }
+
+    .nav-section-title {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 8px 10px 4px;
+      font-weight: 600;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.18s;
+      margin-bottom: 2px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: right;
+    }
+    .nav-item:hover { background: var(--bg-surface); color: var(--text-primary); }
+    .nav-item.active { background: var(--accent-glow); color: var(--accent-soft); }
+    .nav-item .nav-icon { font-size: 1.1rem; }
+
+    /* ── محتوای اصلی ── */
+    .main {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .page-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .content {
+      padding: 32px;
+      flex: 1;
+    }
+
+    /* ── تب‌ها ── */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: 28px;
+      width: fit-content;
+    }
+
+    .tab-btn {
+      padding: 8px 20px;
+      border-radius: 10px;
+      border: none;
+      background: none;
+      color: var(--text-secondary);
+      font-family: var(--font);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    .tab-btn:hover:not(.active) { color: var(--text-primary); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── کارت‌ها ── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── فرم ── */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-row.single { grid-template-columns: 1fr; }
+    .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .form-label .req { color: var(--danger); }
+
+    .form-input, .form-select, .form-textarea {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 0.9rem;
+      transition: border-color 0.18s, box-shadow 0.18s;
+      direction: rtl;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .form-textarea { min-height: 80px; resize: vertical; }
+
+    .form-select option { background: var(--bg-surface); }
+
+    /* ── آپلود فایل صوتی ── */
+    .audio-drop-zone {
+      border: 2px dashed var(--border-bright);
+      border-radius: var(--radius-md);
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--bg-surface);
+      position: relative;
+    }
+    .audio-drop-zone:hover, .audio-drop-zone.drag-over {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+    }
+    .audio-drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .drop-icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .drop-text { font-size: 0.9rem; color: var(--text-secondary); }
+    .drop-subtext { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── پریویو فایل صوتی ── */
+    .audio-preview {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: none;
+      margin-top: 12px;
+    }
+    .audio-preview.visible { display: block; }
+    .audio-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .audio-file-icon { font-size: 2rem; }
+    .audio-file-name { font-size: 0.88rem; font-weight: 600; color: var(--text-primary); }
+    .audio-file-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+    .audio-detected {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .detected-item {
+      background: rgba(62,207,142,0.1);
+      border: 1px solid rgba(62,207,142,0.3);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .detected-item span { font-weight: 700; }
+
+    /* ── دکمه‌ها ── */
+    .btn {
+      padding: 10px 24px;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-family: var(--font);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent-soft); transform: translateY(-1px); }
+    .btn-secondary {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border-bright);
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent-soft); }
+    .btn-success {
+      background: rgba(62,207,142,0.15);
+      color: var(--success);
+      border: 1px solid rgba(62,207,142,0.3);
+    }
+    .btn-success:hover { background: rgba(62,207,142,0.25); }
+    .btn-danger {
+      background: rgba(255,107,107,0.12);
+      color: var(--danger);
+      border: 1px solid rgba(255,107,107,0.25);
+    }
+    .btn-danger:hover { background: rgba(255,107,107,0.2); }
+    .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      justify-content: flex-end;
+    }
+
+    /* ── نشان‌ها ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .badge-new { background: rgba(255,107,107,0.15); color: var(--danger); border: 1px solid rgba(255,107,107,0.3); }
+    .badge-cat { background: var(--accent-glow); color: var(--accent-soft); border: 1px solid rgba(124,106,255,0.3); }
+    .badge-ok { background: rgba(62,207,142,0.1); color: var(--success); border: 1px solid rgba(62,207,142,0.25); }
+
+    /* ── لیست کتاب‌ها ── */
+    .books-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .book-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .book-item:hover { border-color: var(--border-bright); background: var(--bg-surface); }
+    .book-item.selected { border-color: var(--accent); background: var(--accent-glow); }
+
+    .book-emoji { font-size: 2rem; flex-shrink: 0; }
+    .book-info { flex: 1; }
+    .book-name { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+    .book-meta { font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; display: flex; gap: 12px; }
+    .book-actions { display: flex; gap: 8px; }
+
+    /* ── لیست اپیزودها ── */
+    .episodes-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .episode-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ep-num {
+      width: 28px;
+      height: 28px;
+      background: var(--accent-glow);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-soft);
+      flex-shrink: 0;
+    }
+    .ep-info { flex: 1; }
+    .ep-title { font-size: 0.88rem; font-weight: 600; color: var(--text-primary); }
+    .ep-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; display: flex; gap: 10px; }
+
+    /* ── خروجی catalog.js ── */
+    .output-box {
+      background: #0d0d1a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      color: #a594ff;
+      overflow: auto;
+      max-height: 500px;
+      white-space: pre;
+      line-height: 1.6;
+      direction: ltr;
+      text-align: left;
+    }
+
+    /* ── آمار ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-align: center;
+    }
+    .stat-num { font-size: 2rem; font-weight: 800; color: var(--accent-soft); }
+    .stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── هشدار/موفقیت ── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .alert-success { background: rgba(62,207,142,0.1); border: 1px solid rgba(62,207,142,0.3); color: var(--success); }
+    .alert-warning { background: rgba(240,192,64,0.1); border: 1px solid rgba(240,192,64,0.3); color: var(--gold); }
+    .alert-error { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); color: var(--danger); }
+    .alert { display: none; }
+    .alert.show { display: flex; }
+
+    /* ── چک‌باکس ── */
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .check-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .check-row label { font-size: 0.88rem; color: var(--text-secondary); cursor: pointer; }
+
+    /* ── پروگرس ── */
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.3s;
+      width: 0%;
+    }
+
+    /* ── responsive ── */
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; height: auto; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    /* ── تگ اپشنال ── */
+    .optional { font-size: 0.7rem; color: var(--text-muted); }
+
+    /* ── نشانگر بارگذاری ── */
+    .loading-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── تقسیم‌کننده بخش ── */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0 20px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+    .section-divider::before,
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── سایدبار ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🎧</div>
+      <div class="logo-title">نوای بصیرت</div>
+      <div class="logo-sub">پنل مدیریت کتابخانه</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">بخش‌ها</div>
+      <button class="nav-item active" onclick="switchTab('dashboard')" id="nav-dashboard">
+        <span class="nav-icon">📊</span> داشبورد
+      </button>
+      <button class="nav-item" onclick="switchTab('add-episode')" id="nav-add-episode">
+        <span class="nav-icon">➕</span> افزودن اپیزود
+      </button>
+      <button class="nav-item" onclick="switchTab('add-book')" id="nav-add-book">
+        <span class="nav-icon">📚</span> افزودن کتاب جدید
+      </button>
+      <button class="nav-item" onclick="switchTab('bulk-add')" id="nav-bulk-add">
+        <span class="nav-icon">📦</span> افزودن دسته‌ای
+      </button>
+      <button class="nav-item" onclick="switchTab('manage')" id="nav-manage">
+        <span class="nav-icon">✏️</span> مدیریت محتوا
+      </button>
+      <button class="nav-item" onclick="switchTab('export')" id="nav-export">
+        <span class="nav-icon">💾</span> خروجی فایل
+      </button>
+      <div class="nav-section-title" style="margin-top:20px">اقدام سریع</div>
+      <button class="nav-item" onclick="window.open('index.html','_blank')">
+        <span class="nav-icon">🌐</span> نمایش سایت
+      </button>
+      <button class="nav-item" onclick="resetToDefault()" style="color:var(--danger);margin-top:8px;">
+        <span class="nav-icon">🔄</span> بازنشانی به اطلاعات اولیه
+      </button>
+    </nav>
+  </aside>
+
+  <!-- ── محتوای اصلی ── -->
+  <main class="main">
+    <div class="topbar">
+      <div class="page-title" id="page-title">📊 داشبورد</div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <span id="unsaved-badge" style="display:none;background:rgba(240,192,64,0.15);border:1px solid rgba(240,192,64,0.4);color:var(--gold);border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600;">● تغییرات ذخیره‌نشده</span>
+        <button class="btn btn-success btn-sm" onclick="quickDownload()" id="quick-dl-btn">⬇️ دانلود catalog.js</button>
+        <button class="btn btn-secondary btn-sm" onclick="switchTab('export')">👁 پیش‌نمایش</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ══════════════════════ داشبورد ══════════════════════ -->
+      <div class="tab-panel active" id="panel-dashboard">
+        <div class="stats-grid" id="stats-grid"></div>
+
+        <div class="card">
+          <div class="card-title">📖 کتاب‌های موجود در کاتالوگ</div>
+          <div class="books-list" id="dashboard-books"></div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════ افزودن اپیزود ══════════════════════ -->
+      <div class="tab-panel" id="panel-add-episode">
+
+        <div class="alert alert-success" id="ep-alert-success">✅ اپیزود با موفقیت اضافه شد!</div>
+        <div class="alert alert-error" id="ep-alert-error">❌ لطفاً فیلدهای ستاره‌دار را پر کنید.</div>
+
+
+        <div style="background:rgba(124,106,255,0.07);border:1px solid rgba(124,106,255,0.25);border-radius:var(--radius-md);padding:14px 18px;margin-bottom:20px;font-size:0.82rem;line-height:1.8;color:var(--text-secondary);">
+          <div style="font-weight:700;color:var(--accent-soft);margin-bottom:6px;">📌 نحوه ذخیره اطلاعات</div>
+          اطلاعات وارد‌شده در <b style="color:var(--text-primary);">مرورگر (localStorage)</b> ذخیره می‌شود.
+          برای اعمال تغییرات روی سایت، باید فایل <code style="background:rgba(255,255,255,0.08);padding:1px 6px;border-radius:4px;">catalog.js</code> را دانلود و جایگزین کنید:
+          <div style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap;">
+            <span style="background:rgba(124,106,255,0.1);border:1px solid rgba(124,106,255,0.2);border-radius:20px;padding:2px 12px;">۱. اپیزود را اضافه کنید</span>
+            <span style="background:rgba(124,106,255,0.1);border:1px solid rgba(124,106,255,0.2);border-radius:20px;padding:2px 12px;">۲. دکمه «⬇️ دانلود catalog.js» بالای صفحه را بزنید</span>
+            <span style="background:rgba(124,106,255,0.1);border:1px solid rgba(124,106,255,0.2);border-radius:20px;padding:2px 12px;">۳. فایل را جایگزین <code>data/catalog.js</code> کنید</span>
+          </div>
+        </div>
+        <!-- انتخاب کتاب -->
+        <div class="card">
+          <div class="card-title">📖 انتخاب کتاب</div>
+          <div class="form-row single">
+            <div class="form-group">
+              <label class="form-label">کتاب مورد نظر <span class="req">*</span></label>
+              <select class="form-select" id="ep-book-select">
+                <option value="">— انتخاب کنید —</option>
+              </select>
+            </div>
+          </div>
+          <div id="book-selected-info" style="display:none;margin-top:8px;">
+            <div class="book-item selected" id="selected-book-card" style="cursor:default;"></div>
+          </div>
+        </div>
+
+        <!-- آپلود فایل صوتی -->
+        <div class="card">
+          <div class="card-title">🎵 فایل صوتی <span class="optional">(اختیاری — برای استخراج خودکار اطلاعات)</span></div>
+
+          <div class="audio-drop-zone" id="audio-drop-zone">
+            <input type="file" accept="audio/*" id="audio-file-input" />
+            <div class="drop-icon">🎙️</div>
+            <div class="drop-text">فایل صوتی را اینجا بکشید یا کلیک کنید</div>
+            <div class="drop-subtext">MP3 · M4A · OGG · WAV · FLAC — مدت زمان به صورت خودکار محاسبه می‌شود</div>
+          </div>
+
+          <div class="audio-preview" id="audio-preview">
+            <div class="audio-info">
+              <div class="audio-file-icon">🎵</div>
+              <div>
+                <div class="audio-file-name" id="audio-file-name"></div>
+                <div class="audio-file-meta" id="audio-file-meta"></div>
+              </div>
+            </div>
+            <div class="audio-detected" id="audio-detected"></div>
+            <div style="margin-top:12px;">
+              <audio id="audio-player" controls style="width:100%;border-radius:8px;"></audio>
+            </div>
+            <div class="progress-bar" id="audio-load-bar">
+              <div class="progress-fill" id="audio-load-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- اطلاعات اپیزود -->
+        <div class="card">
+          <div class="card-title">📝 اطلاعات اپیزود</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">عنوان اپیزود <span class="req">*</span></label>
+              <input type="text" class="form-input" id="ep-title" placeholder="مثال: فصل اول" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">مدت زمان <span class="req">*</span></label>
+              <input type="text" class="form-input" id="ep-duration" placeholder="مثال: 42:30" />
+            </div>
+          </div>
+
+          <div class="form-row single">
+            <div class="form-group">
+              <label class="form-label">لینک صوتی (تلگرام یا مستقیم) <span class="req">*</span></label>
+              <div style="display:flex;gap:8px;align-items:stretch;">
+                <input type="text" class="form-input" id="ep-url" placeholder="https://t.me/channel/1234" style="flex:1;" oninput="onUrlInput(this.value)" />
+                <button class="btn btn-secondary" id="tg-fetch-btn" onclick="fetchTelegramInfo()" style="white-space:nowrap;display:none;">
+                  <span id="tg-fetch-icon">📡</span> دریافت اطلاعات
+                </button>
+              </div>
+              <div id="tg-fetch-status" style="display:none;margin-top:8px;"></div>
+            </div>
+          </div>
+
+          <!-- اطلاعات دریافت‌شده از تلگرام -->
+          <div id="tg-info-box" style="display:none;margin-bottom:16px;">
+            <div style="background:rgba(62,207,142,0.07);border:1px solid rgba(62,207,142,0.25);border-radius:var(--radius-md);padding:16px;">
+              <div style="font-size:0.82rem;font-weight:700;color:var(--success);margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+                ✅ اطلاعات از تلگرام دریافت شد
+                <span id="tg-auto-filled-badge" style="background:rgba(62,207,142,0.15);border:1px solid rgba(62,207,142,0.3);border-radius:20px;padding:2px 10px;font-size:0.72rem;">فیلدها تکمیل شدند</span>
+              </div>
+              <div id="tg-info-items" style="display:flex;flex-wrap:wrap;gap:10px;"></div>
+            </div>
+          </div>
+
+          <!-- تنظیمات تلگرام -->
+          <div id="tg-token-panel" style="display:none;margin-bottom:16px;">
+            <div style="background:rgba(240,192,64,0.07);border:1px solid rgba(240,192,64,0.25);border-radius:var(--radius-md);padding:16px;">
+              <div style="font-size:0.82rem;font-weight:700;color:var(--gold);margin-bottom:4px;">🤖 تنظیمات بات تلگرام</div>
+              <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:12px;line-height:1.7;">
+                بات را در کانال/گروه واسط ادمین کنید، سپس توکن و آیدی را وارد نمایید.
+              </div>
+
+              <div style="margin-bottom:10px;">
+                <label style="font-size:0.78rem;color:var(--text-muted);display:block;margin-bottom:4px;">توکن بات <span style="color:var(--danger);">*</span></label>
+                <div style="display:flex;gap:8px;">
+                  <input type="password" class="form-input" id="tg-bot-token" placeholder="123456789:ABCdef..." style="flex:1;font-size:0.82rem;" />
+                  <button class="btn btn-secondary btn-sm" onclick="verifyAndSaveBotToken('single')" style="white-space:nowrap;">🔌 اتصال</button>
+                </div>
+                <div id="single-token-verify-result" style="font-size:0.73rem;margin-top:4px;display:none;"></div>
+              </div>
+
+              <div>
+                <label style="font-size:0.78rem;color:var(--text-muted);display:block;margin-bottom:4px;">آیدی عددی کانال/گروه واسط <span style="color:var(--danger);">*</span></label>
+                <div style="display:flex;gap:8px;">
+                  <input type="text" class="form-input" id="tg-relay-chat" placeholder="-1001234567890" style="flex:1;font-size:0.82rem;direction:ltr;" />
+                  <button class="btn btn-secondary btn-sm" onclick="verifyAndSaveRelayChat('single')" style="white-space:nowrap;">✔️ تأیید</button>
+                </div>
+                <div id="single-relay-verify-result" style="font-size:0.73rem;margin-top:4px;display:none;"></div>
+                <div style="font-size:0.72rem;color:var(--text-muted);margin-top:5px;line-height:1.6;">
+                  بات باید ادمین این کانال/گروه باشد · پیام forward و بلافاصله حذف می‌شود
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">تاریخ انتشار</label>
+              <input type="text" class="form-input" id="ep-date" placeholder="مثال: ۱۴۰۳/۰۱/۱۵" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">خواننده / گوینده <span class="optional">(اختیاری)</span></label>
+              <input type="text" class="form-input" id="ep-performer" placeholder="از تلگرام استخراج می‌شود" />
+            </div>
+          </div>
+
+          <div class="form-row single">
+            <div class="form-group">
+              <label class="form-label">توضیحات <span class="optional">(اختیاری)</span></label>
+              <textarea class="form-textarea" id="ep-desc" placeholder="خلاصه محتوای این اپیزود..."></textarea>
+            </div>
+          </div>
+
+          <div class="form-row single">
+            <div class="check-row">
+              <input type="checkbox" id="ep-is-new" />
+              <label for="ep-is-new">🔴 این اپیزود را به عنوان «جدید» علامت بزن</label>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-secondary" onclick="clearEpForm()">🗑️ پاک کردن</button>
+            <button class="btn btn-primary" onclick="addEpisode()">➕ افزودن اپیزود</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════ افزودن کتاب جدید ══════════════════════ -->
+      <div class="tab-panel" id="panel-add-book">
+
+        <div class="alert alert-success" id="book-alert-success">✅ کتاب با موفقیت اضافه شد!</div>
+        <div class="alert alert-error" id="book-alert-error">❌ لطفاً عنوان، نویسنده و دسته‌بندی را وارد کنید.</div>
+
+        <div class="card">
+          <div class="card-title">📚 مشخصات کتاب</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">عنوان کتاب <span class="req">*</span></label>
+              <input type="text" class="form-input" id="book-title" placeholder="نام کتاب" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">نویسنده / گوینده <span class="req">*</span></label>
+              <input type="text" class="form-input" id="book-author" placeholder="نام نویسنده یا گوینده" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">دسته‌بندی <span class="req">*</span></label>
+              <input type="text" class="form-input" id="book-category" placeholder="مثال: اعتقادی، فضائل، ..." list="category-list" />
+              <datalist id="category-list"></datalist>
+            </div>
+            <div class="form-group">
+              <label class="form-label">تعداد اپیزود کل <span class="optional">(برآورد)</span></label>
+              <input type="number" class="form-input" id="book-total-ep" placeholder="مثال: 20" min="1" />
+            </div>
+          </div>
+
+          <div class="form-row single">
+            <div class="form-group">
+              <label class="form-label">توضیحات کتاب <span class="optional">(اختیاری)</span></label>
+              <textarea class="form-textarea" id="book-desc" placeholder="درباره این کتاب..."></textarea>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-secondary" onclick="clearBookForm()">🗑️ پاک کردن</button>
+            <button class="btn btn-primary" onclick="addBook()">📚 افزودن کتاب</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════ مدیریت محتوا ══════════════════════ -->
+      <div class="tab-panel" id="panel-manage">
+        <div class="card">
+          <div class="card-title">🗂️ همه کتاب‌ها و اپیزودها</div>
+          <div id="manage-list"></div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════ خروجی فایل ══════════════════════ -->
+      <div class="tab-panel" id="panel-export">
+
+        <div class="alert alert-warning show" id="export-warning">
+          ⚠️ این فایل را پس از دانلود، جایگزین فایل <code>data/catalog.js</code> در پوشه پروژه کنید.
+        </div>
+
+        <div class="card">
+          <div class="card-title">💾 پیش‌نمایش catalog.js</div>
+          <div class="btn-row" style="border-top:none;padding-top:0;margin-top:0;margin-bottom:16px;justify-content:flex-start;">
+            <button class="btn btn-primary" onclick="downloadCatalog()">⬇️ دانلود catalog.js</button>
+            <button class="btn btn-secondary" onclick="copyToClipboard()">📋 کپی در کلیپ‌بورد</button>
+          </div>
+          <div class="output-box" id="catalog-output"></div>
+        </div>
+      </div>
+
+
+      <!-- ══════════════════════ افزودن دسته‌ای ══════════════════════ -->
+      <div class="tab-panel" id="panel-bulk-add">
+
+        <div class="alert alert-success" id="bulk-alert-success">✅ اپیزودها با موفقیت اضافه شدند!</div>
+        <div class="alert alert-error"   id="bulk-alert-error">❌ خطا در افزودن — فیلدهای ستاره‌دار را بررسی کنید.</div>
+
+        <div class="card">
+          <div class="card-title">📖 انتخاب کتاب</div>
+          <div class="form-row single">
+            <div class="form-group">
+              <label class="form-label">کتاب مورد نظر <span class="req">*</span></label>
+              <select class="form-select" id="bulk-book-select">
+                <option value="">— انتخاب کنید —</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="bulk-bot-settings-card">
+          <div class="card-title">🤖 تنظیمات بات تلگرام
+            <span id="bulk-bot-status-badge" style="margin-right:auto;font-size:0.72rem;font-weight:600;padding:2px 10px;border-radius:20px;display:none;"></span>
+          </div>
+
+          <!-- راهنمای سریع -->
+          <div style="background:rgba(124,106,255,0.07);border:1px solid rgba(124,106,255,0.2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;font-size:0.78rem;color:var(--text-secondary);line-height:1.8;">
+            <b style="color:var(--accent-soft);">📌 نحوه اتصال بات:</b><br>
+            ۱. از @BotFather یک بات بسازید و توکن را کپی کنید.<br>
+            ۲. بات را به کانال/گروه خصوصی خود اضافه کنید و ادمین کنید (حداقل دسترسی: ارسال پیام، حذف پیام).<br>
+            ۳. آیدی عددی کانال/گروه را در فیلد زیر وارد کنید (مثال: <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;direction:ltr;display:inline-block;">-1001234567890</code>).
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.78rem;color:var(--text-muted);display:block;margin-bottom:5px;">توکن بات (از @BotFather) <span style="color:var(--danger);">*</span></label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="password" class="form-input" id="bulk-bot-token" placeholder="123456789:ABCdef..." style="flex:1;font-size:0.85rem;" oninput="onBulkTokenInput()" />
+              <button class="btn btn-secondary" id="bulk-token-verify-btn" onclick="verifyAndSaveBotToken('bulk')" style="white-space:nowrap;">🔌 اتصال</button>
+              <span id="bulk-token-ok" style="display:none;color:var(--success);font-size:0.8rem;">✅</span>
+            </div>
+            <div id="bulk-token-verify-result" style="font-size:0.75rem;margin-top:5px;display:none;"></div>
+          </div>
+
+          <div>
+            <label style="font-size:0.78rem;color:var(--text-muted);display:block;margin-bottom:5px;">🔀 آیدی عددی کانال/گروه واسط <span style="color:var(--danger);">*</span></label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="text" class="form-input" id="bulk-relay-chat" placeholder="-1001234567890" style="flex:1;font-size:0.85rem;direction:ltr;" />
+              <button class="btn btn-secondary" onclick="verifyAndSaveRelayChat('bulk')" style="white-space:nowrap;">✔️ تأیید</button>
+              <span id="bulk-relay-ok" style="display:none;color:var(--success);font-size:0.8rem;">✅</span>
+            </div>
+            <div id="bulk-relay-verify-result" style="font-size:0.75rem;margin-top:5px;display:none;"></div>
+            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:5px;line-height:1.6;">
+              برای کانال خصوصی، آیدی با <b>-100</b> شروع می‌شود. بات باید در آن ادمین باشد.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📋 لیست لینک‌های تلگرام</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px;">هر لینک را در یک خط وارد کنید. اطلاعات از تلگرام دریافت می‌شود.</div>
+          <textarea class="form-textarea" id="bulk-links" rows="8" placeholder="https://t.me/channel/101&#10;https://t.me/channel/102&#10;https://t.me/channel/103" style="font-family:monospace;font-size:0.82rem;direction:ltr;"></textarea>
+          <div class="btn-row" style="margin-top:12px;">
+            <button class="btn btn-secondary" onclick="bulkPreview()" id="bulk-preview-btn">🔍 پیش‌نمایش و دریافت اطلاعات</button>
+            <button class="btn btn-primary"   onclick="bulkConfirmAdd()" id="bulk-confirm-btn" style="display:none;">➕ افزودن همه اپیزودها</button>
+          </div>
+        </div>
+
+        <!-- جدول پیش‌نمایش -->
+        <div id="bulk-preview-area" style="display:none;">
+          <div class="card">
+            <div class="card-title">📊 پیش‌نمایش اپیزودها</div>
+            <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px;" id="bulk-preview-summary"></div>
+            <div id="bulk-rows-container" style="display:flex;flex-direction:column;gap:10px;"></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div><!-- /content -->
+  </main>
+
+</div><!-- /layout -->
+
+<!-- ── دیتا پایه ── -->
+<script src="data/catalog.js"></script>
+
+<script>
+// ── وضعیت کاری ──
+const STORAGE_KEY = 'navaye_basyrat_catalog';
+
+function loadCatalog() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(CATALOG));
+}
+
+function saveCatalog() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(workingCatalog));
+    // نمایش badge تغییرات ذخیره‌نشده
+    const badge = document.getElementById('unsaved-badge');
+    if (badge) badge.style.display = 'inline';
+    const btn = document.getElementById('quick-dl-btn');
+    if (btn) btn.style.boxShadow = '0 0 0 2px rgba(240,192,64,0.5)';
+  } catch(e) {
+    alert('خطا در ذخیره‌سازی: ' + e.message);
+  }
+}
+
+function quickDownload() {
+  const content = generateCatalogJS();
+  const blob = new Blob([content], { type: 'application/javascript' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'catalog.js';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  // پاک کردن badge بعد از دانلود
+  const badge = document.getElementById('unsaved-badge');
+  if (badge) badge.style.display = 'none';
+  const btn = document.getElementById('quick-dl-btn');
+  if (btn) btn.style.boxShadow = '';
+  // نمایش راهنما
+  showDownloadGuide();
+}
+
+function showDownloadGuide() {
+  const existing = document.getElementById('dl-guide-toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'dl-guide-toast';
+  toast.style.cssText = `
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:var(--bg-elevated);border:1px solid var(--success);
+    border-radius:var(--radius-md);padding:16px 24px;z-index:9999;
+    font-size:0.85rem;color:var(--text-primary);box-shadow:0 8px 32px rgba(0,0,0,0.4);
+    max-width:420px;text-align:center;line-height:1.7;
+  `;
+  toast.innerHTML = `
+    <div style="font-weight:700;color:var(--success);margin-bottom:6px;">✅ catalog.js دانلود شد</div>
+    <div style="color:var(--text-secondary);">فایل دانلود‌شده را جایگزین<br><code style="background:rgba(255,255,255,0.1);padding:1px 6px;border-radius:4px;">data/catalog.js</code><br>در پوشه پروژه کنید.</div>
+    <button onclick="this.parentElement.remove()" style="margin-top:10px;background:transparent;border:1px solid var(--border-bright);color:var(--text-muted);border-radius:6px;padding:4px 14px;cursor:pointer;font-size:0.78rem;">بستن</button>
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast?.remove(), 8000);
+}
+
+let workingCatalog = loadCatalog();
+
+const COVER_EMOJIS = ['📗','📘','📙','📕','📔','📒','📚','🔖'];
+function bookEmoji(id) {
+  const num = parseInt((id || '').replace(/\D/g,'')) || 0;
+  return COVER_EMOJIS[num % COVER_EMOJIS.length];
+}
+
+function newId(prefix, list) {
+  const nums = list.map(x => parseInt((x.id || '').replace(/\D/g,''))).filter(Boolean);
+  return prefix + (nums.length ? Math.max(...nums) + 1 : 1);
+}
+
+function toJalali() {
+  try {
+    const d = new Date();
+    return new Intl.DateTimeFormat('fa-IR-u-ca-persian', {year:'numeric',month:'2-digit',day:'2-digit'})
+      .format(d).replace(/\//g, '/');
+  } catch { return ''; }
+}
+
+// ── تب سوئیچ ──
+function switchTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  document.getElementById('nav-' + id)?.classList.add('active');
+
+  const titles = {
+    'dashboard': '📊 داشبورد',
+    'add-episode': '➕ افزودن اپیزود',
+    'add-book': '📚 افزودن کتاب جدید',
+    'manage': '✏️ مدیریت محتوا',
+    'export': '💾 خروجی فایل',
+    'bulk-add': '📦 افزودن دسته‌ای'
+  };
+  document.getElementById('page-title').textContent = titles[id] || '';
+
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'add-episode') populateBookSelect();
+  if (id === 'bulk-add') bulkInit();
+  if (id === 'add-book') populateCategoryList();
+  if (id === 'manage') renderManage();
+  if (id === 'export') renderExport();
+}
+
+// ── داشبورد ──
+function renderDashboard() {
+  const totalBooks = workingCatalog.length;
+  const totalEps = workingCatalog.reduce((s, b) => s + b.episodes.length, 0);
+  const categories = new Set(workingCatalog.map(b => b.category)).size;
+  const authors = new Set(workingCatalog.map(b => b.author)).size;
+
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${totalBooks}</div><div class="stat-label">کتاب</div></div>
+    <div class="stat-card"><div class="stat-num">${totalEps}</div><div class="stat-label">اپیزود</div></div>
+    <div class="stat-card"><div class="stat-num">${categories}</div><div class="stat-label">دسته‌بندی</div></div>
+    <div class="stat-card"><div class="stat-num">${authors}</div><div class="stat-label">نویسنده</div></div>
+  `;
+
+  const bl = document.getElementById('dashboard-books');
+  bl.innerHTML = workingCatalog.map(book => `
+    <div class="book-item" onclick="jumpToBook('${book.id}')">
+      <div class="book-emoji">${bookEmoji(book.id)}</div>
+      <div class="book-info">
+        <div class="book-name">${book.title}</div>
+        <div class="book-meta">
+          <span>✍️ ${book.author}</span>
+          <span class="badge badge-cat">${book.category}</span>
+          <span>🎙 ${book.episodes.length} اپیزود</span>
+        </div>
+      </div>
+      <div class="book-actions">
+        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();quickAddEp('${book.id}')">➕ اپیزود</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function jumpToBook(bookId) {
+  switchTab('manage');
+  setTimeout(() => {
+    const el = document.getElementById('manage-book-' + bookId);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function quickAddEp(bookId) {
+  switchTab('add-episode');
+  setTimeout(() => {
+    document.getElementById('ep-book-select').value = bookId;
+    onBookSelect(bookId);
+  }, 50);
+}
+
+// ── انتخاب کتاب در فرم اپیزود ──
+function populateBookSelect() {
+  const sel = document.getElementById('ep-book-select');
+  sel.innerHTML = '<option value="">— انتخاب کنید —</option>' +
+    workingCatalog.map(b => `<option value="${b.id}">${bookEmoji(b.id)} ${b.title} — ${b.author}</option>`).join('');
+  sel.onchange = () => onBookSelect(sel.value);
+}
+
+function onBookSelect(bookId) {
+  const book = workingCatalog.find(b => b.id === bookId);
+  const card = document.getElementById('selected-book-card');
+  const info = document.getElementById('book-selected-info');
+  if (!book) { info.style.display = 'none'; return; }
+  info.style.display = 'block';
+  card.innerHTML = `
+    <div class="book-emoji">${bookEmoji(book.id)}</div>
+    <div class="book-info">
+      <div class="book-name">${book.title}</div>
+      <div class="book-meta">
+        <span>✍️ ${book.author}</span>
+        <span class="badge badge-cat">${book.category}</span>
+        <span>🎙 ${book.episodes.length} اپیزود ثبت‌شده</span>
+      </div>
+    </div>
+  `;
+  // شماره اپیزود بعدی برای عنوان پیشنهادی
+  const nextNum = book.episodes.length + 1;
+  const titleInput = document.getElementById('ep-title');
+  if (!titleInput.value) titleInput.value = 'فصل ' + toFarsiNum(nextNum);
+  const dateInput = document.getElementById('ep-date');
+  if (!dateInput.value) dateInput.value = toJalali();
+}
+
+function toFarsiNum(n) {
+  const farsi = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(n).split('').map(c => farsi[c] ?? c).join('');
+}
+
+// ── آپلود و آنالیز فایل صوتی ──
+const dropZone = document.getElementById('audio-drop-zone');
+const fileInput = document.getElementById('audio-file-input');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) processAudioFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files[0]) processAudioFile(fileInput.files[0]);
+});
+
+function processAudioFile(file) {
+  const preview = document.getElementById('audio-preview');
+  const nameEl = document.getElementById('audio-file-name');
+  const metaEl = document.getElementById('audio-file-meta');
+  const detectedEl = document.getElementById('audio-detected');
+  const fill = document.getElementById('audio-load-fill');
+  const player = document.getElementById('audio-player');
+
+  preview.classList.add('visible');
+  nameEl.textContent = file.name;
+  metaEl.textContent = 'در حال پردازش...';
+  detectedEl.innerHTML = '';
+  fill.style.width = '30%';
+
+  const url = URL.createObjectURL(file);
+  player.src = url;
+  fill.style.width = '60%';
+
+  player.addEventListener('loadedmetadata', function onMeta() {
+    player.removeEventListener('loadedmetadata', onMeta);
+
+    const totalSecs = Math.floor(player.duration);
+    const mins = Math.floor(totalSecs / 60);
+    const secs = totalSecs % 60;
+    const durationStr = `${mins}:${String(secs).padStart(2, '0')}`;
+
+    fill.style.width = '100%';
+    setTimeout(() => { fill.style.width = '0%'; }, 800);
+
+    // پر کردن مدت زمان
+    document.getElementById('ep-duration').value = durationStr;
+
+    // اندازه فایل
+    const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+    metaEl.textContent = `${sizeMB} MB · ${file.type || 'audio'}`;
+
+    // پیشنهاد عنوان از نام فایل
+    const cleanName = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+    const titleInput = document.getElementById('ep-title');
+    if (!titleInput.value) {
+      titleInput.value = cleanName;
+    }
+
+    detectedEl.innerHTML = `
+      <div class="detected-item">✅ مدت زمان: <span>${durationStr}</span></div>
+      <div class="detected-item">📁 حجم: <span>${sizeMB} MB</span></div>
+    `;
+  });
+
+  player.addEventListener('error', () => {
+    metaEl.textContent = 'خطا در خواندن فایل';
+    fill.style.width = '0%';
+  });
+}
+
+// ── افزودن اپیزود ──
+function addEpisode() {
+  const bookId    = document.getElementById('ep-book-select').value;
+  const title     = document.getElementById('ep-title').value.trim();
+  const duration  = document.getElementById('ep-duration').value.trim();
+  const url       = document.getElementById('ep-url').value.trim();
+  const desc      = document.getElementById('ep-desc').value.trim();
+  const date      = document.getElementById('ep-date').value.trim();
+  const isNew     = document.getElementById('ep-is-new').checked;
+  const performer = document.getElementById('ep-performer').value.trim();
+
+  hideAlerts();
+
+  if (!bookId || !title || !url) {
+    showAlert('ep-alert-error');
+    return;
+  }
+
+  const book = workingCatalog.find(b => b.id === bookId);
+  if (!book) return;
+
+  const epId = newId('ep-' + bookId.replace('book-','') + '-', book.episodes);
+  const tgFileId = document.getElementById('ep-url').dataset.telegramFileId || '';
+
+  book.episodes.push({
+    id: epId,
+    title,
+    duration,
+    audioUrl: url,
+    telegramFileId: tgFileId,
+    performer,
+    description: desc,
+    date: date || toJalali(),
+    isNew
+  });
+  book.totalEpisodes = book.episodes.length;
+
+  saveCatalog();
+  showAlert('ep-alert-success');
+  // نمایش دکمه دانلود سریع
+  setTimeout(() => {
+    const btn = document.getElementById('quick-dl-btn');
+    if (btn) { btn.textContent = '⬇️ دانلود catalog.js ✨'; setTimeout(() => btn.textContent = '⬇️ دانلود catalog.js', 4000); }
+  }, 500);
+  clearEpForm();
+  renderDashboard();
+}
+
+function clearEpForm() {
+  ['ep-book-select','ep-title','ep-duration','ep-url','ep-desc','ep-date','ep-performer'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('ep-is-new').checked = false;
+  document.getElementById('book-selected-info').style.display = 'none';
+  document.getElementById('audio-preview').classList.remove('visible');
+  document.getElementById('ep-url').dataset.telegramFileId = '';
+  document.getElementById('tg-fetch-btn').style.display = 'none';
+  document.getElementById('tg-info-box').style.display = 'none';
+  document.getElementById('tg-fetch-status').style.display = 'none';
+  document.getElementById('tg-token-panel').style.display = 'none';
+  hideAlerts();
+}
+
+// ── افزودن کتاب ──
+function addBook() {
+  const title    = document.getElementById('book-title').value.trim();
+  const author   = document.getElementById('book-author').value.trim();
+  const category = document.getElementById('book-category').value.trim();
+  const desc     = document.getElementById('book-desc').value.trim();
+  const totalEp  = parseInt(document.getElementById('book-total-ep').value) || 0;
+
+  hideAlerts();
+  if (!title || !author || !category) {
+    showAlert('book-alert-error');
+    return;
+  }
+
+  const bookId = newId('book-', workingCatalog);
+  workingCatalog.push({
+    id: bookId,
+    title,
+    author,
+    category,
+    cover: '',
+    description: desc,
+    totalEpisodes: totalEp,
+    episodes: []
+  });
+
+  saveCatalog();
+  showAlert('book-alert-success');
+  clearBookForm();
+  renderDashboard();
+}
+
+function clearBookForm() {
+  ['book-title','book-author','book-category','book-desc','book-total-ep'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  hideAlerts();
+}
+
+function populateCategoryList() {
+  const cats = [...new Set(workingCatalog.map(b => b.category))];
+  document.getElementById('category-list').innerHTML =
+    cats.map(c => `<option value="${c}">`).join('');
+}
+
+// ── مدیریت محتوا ──
+function renderManage() {
+  document.getElementById('manage-list').innerHTML = workingCatalog.map(book => `
+    <div id="manage-book-${book.id}" style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);">
+        <div style="font-size:1.4rem;">${bookEmoji(book.id)}</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:0.95rem;">${book.title}</div>
+          <div style="font-size:0.78rem;color:var(--text-secondary);">✍️ ${book.author} &nbsp;|&nbsp; <span class="badge badge-cat">${book.category}</span></div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-secondary btn-sm" onclick="quickAddEp('${book.id}')">➕ اپیزود</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteBook('${book.id}')">🗑️ حذف کتاب</button>
+        </div>
+      </div>
+      <div class="episodes-list">
+        ${book.episodes.length === 0
+          ? `<div style="color:var(--text-muted);font-size:0.85rem;padding:12px;text-align:center;">هنوز اپیزودی ندارد</div>`
+          : book.episodes.map((ep, i) => `
+            <div class="episode-item">
+              <div class="ep-num">${i + 1}</div>
+              <div class="ep-info">
+                <div class="ep-title">${ep.title} ${ep.isNew ? '<span class="badge badge-new">جدید</span>' : ''}</div>
+                <div class="ep-meta">
+                  <span>⏱ ${ep.duration}</span>
+                  <span>📅 ${ep.date}</span>
+                  <span style="color:var(--text-muted);font-size:0.7rem;">${ep.audioUrl}</span>
+                </div>
+              </div>
+              <div>
+                <button class="btn btn-danger btn-sm" onclick="deleteEpisode('${book.id}','${ep.id}')">🗑️</button>
+              </div>
+            </div>
+          `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function deleteBook(bookId) {
+  if (!confirm('آیا مطمئنید؟ کتاب و همه اپیزودهایش حذف می‌شوند.')) return;
+  workingCatalog = workingCatalog.filter(b => b.id !== bookId);
+  saveCatalog();
+  renderManage();
+}
+
+function deleteEpisode(bookId, epId) {
+  if (!confirm('این اپیزود حذف شود؟')) return;
+  const book = workingCatalog.find(b => b.id === bookId);
+  if (!book) return;
+  book.episodes = book.episodes.filter(e => e.id !== epId);
+  book.totalEpisodes = book.episodes.length;
+  saveCatalog();
+  renderManage();
+}
+
+// ── تولید catalog.js ──
+function generateCatalogJS() {
+  const cats = [...new Set(workingCatalog.map(b => b.category))];
+  const json = JSON.stringify(workingCatalog, null, 2);
+
+  return `// ============================================================
+//  📚 کاتالوگ کتاب‌ها و اپیزودها
+//  ویرایش‌شده با پنل مدیریت نوای بصیرت
+//  آخرین به‌روزرسانی: ${new Date().toLocaleString('fa-IR')}
+// ============================================================
+
+const CATALOG = ${json};
+
+// دسته‌بندی‌های موجود
+const CATEGORIES = ["همه", ...new Set(CATALOG.map(b => b.category))];
+`;
+}
+
+function renderExport() {
+  document.getElementById('catalog-output').textContent = generateCatalogJS();
+}
+
+function downloadCatalog() {
+  const content = generateCatalogJS();
+  const blob = new Blob([content], { type: 'application/javascript' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'catalog.js';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function copyToClipboard() {
+  navigator.clipboard.writeText(generateCatalogJS()).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ کپی شد!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
+// ── کمکی ──
+function showAlert(id) {
+  document.getElementById(id).classList.add('show');
+  setTimeout(() => document.getElementById(id)?.classList.remove('show'), 4000);
+}
+function hideAlerts() {
+  document.querySelectorAll('.alert').forEach(a => a.classList.remove('show'));
+}
+
+// ── بازنشانی ──
+function resetToDefault() {
+  if (!confirm('آیا مطمئنید؟ تمام تغییرات شما پاک می‌شود و اطلاعات اولیه catalog.js بازمی‌گردد.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  workingCatalog = JSON.parse(JSON.stringify(CATALOG));
+  renderDashboard();
+  alert('بازنشانی انجام شد.');
+}
+
+// ══════════════ توابع تلگرام (بازنویسی‌شده) ══════════════
+
+// ── ذخیره و بازیابی تنظیمات ──
+function getBotToken()  { return localStorage.getItem('tg_bot_token')  || ''; }
+function getRelayChat() { return localStorage.getItem('tg_relay_chat') || ''; }
+function saveBotToken(token) { if (token) localStorage.setItem('tg_bot_token',  token.trim()); }
+function saveRelayChat(val)  { if (val)   localStorage.setItem('tg_relay_chat', val.trim()); }
+
+// ── پارس لینک تلگرام ──
+// فرمت‌های پشتیبانی‌شده:
+//   https://t.me/c/1234567890/101   → کانال خصوصی
+//   https://t.me/channelname/101    → کانال عمومی
+//   https://t.me/channelname        → فقط کانال (بدون پیام)
+function parseTgLink(url) {
+  let m;
+  // کانال خصوصی: t.me/c/CHANNEL_ID/MSG_ID
+  m = url.match(/t\.me\/c\/(\d+)\/(\d+)/i);
+  if (m) return { chatId: '-100' + m[1], msgId: parseInt(m[2]) };
+  // کانال عمومی با یوزرنیم: t.me/USERNAME/MSG_ID
+  m = url.match(/t\.me\/([a-zA-Z][a-zA-Z0-9_]{3,})\/(\d+)/i);
+  if (m) return { chatId: '@' + m[1], msgId: parseInt(m[2]) };
+  return null;
+}
+
+// ── اعتبارسنجی توکن بات ──
+async function tgVerifyToken(token) {
+  const res  = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+  const data = await res.json();
+  if (!data.ok) throw new Error('توکن نامعتبر: ' + (data.description || 'خطای نامشخص'));
+  return data.result; // { id, first_name, username }
+}
+
+// ── دریافت پیام از تلگرام ──
+// روش: forwardMessage به کانال واسط → دریافت اطلاعات → deleteMessage
+async function tgFetchMessage(token, chatId, msgId) {
+  const relayChat = getRelayChat();
+  if (!relayChat) throw new Error('NEED_RELAY');
+
+  // Forward پیام به کانال واسط
+  const fwdRes = await fetch(`https://api.telegram.org/bot${token}/forwardMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: relayChat,
+      from_chat_id: chatId,
+      message_id: msgId,
+      disable_notification: true
+    })
+  });
+  const fwdData = await fwdRes.json();
+
+  if (!fwdData.ok) {
+    const desc = fwdData.description || '';
+    if (desc.includes('not enough rights') || desc.includes('CHAT_WRITE_FORBIDDEN'))
+      throw new Error('بات دسترسی ارسال پیام به کانال واسط را ندارد. مطمئن شوید بات ادمین کانال است.');
+    if (desc.includes('chat not found'))
+      throw new Error('کانال/گروه واسط پیدا نشد. آیدی را دوباره بررسی کنید.');
+    if (desc.includes('MESSAGE_ID_INVALID') || desc.includes('message to forward not found'))
+      throw new Error('پیام مورد نظر در کانال مبدأ پیدا نشد. لینک را بررسی کنید.');
+    if (desc.includes('CHANNEL_PRIVATE') || desc.includes('channel private'))
+      throw new Error('کانال مبدأ خصوصی است و بات به آن دسترسی ندارد. بات را به کانال مبدأ هم اضافه کنید.');
+    throw new Error('خطای forward: ' + desc);
+  }
+
+  const forwardedMsg = fwdData.result;
+  const newMsgId = forwardedMsg.message_id;
+
+  // حذف پیام از کانال واسط (آرام — خطا نادیده گرفته می‌شود)
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/deleteMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: relayChat, message_id: newMsgId })
+    });
+  } catch(_) {}
+
+  return forwardedMsg;
+}
+
+// ── استخراج اطلاعات از پیام ──
+function extractInfoFromMsg(msg) {
+  const audio = msg.audio || msg.voice || msg.document;
+  if (!audio) return null;
+
+  const info = { raw: audio, msg };
+
+  if (audio.duration) {
+    const m = Math.floor(audio.duration / 60);
+    const s = audio.duration % 60;
+    info.duration = `${m}:${String(s).padStart(2,'0')}`;
+  }
+
+  info.performer  = audio.performer  || '';
+  info.title      = audio.title      || audio.file_name || '';
+  info.fileId     = audio.file_id    || '';
+  info.fileSizeMB = audio.file_size  ? (audio.file_size / 1024 / 1024).toFixed(1) : '';
+
+  if (msg.date) {
+    try {
+      info.dateStr = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+        year:'numeric', month:'2-digit', day:'2-digit'
+      }).format(new Date(msg.date * 1000)).replace(/\//g, '/');
+    } catch { info.dateStr = ''; }
+  }
+
+  info.caption = msg.caption || '';
+  return info;
+}
+
+// ── تأیید و ذخیره توکن (با تست اتصال زنده) ──
+async function verifyAndSaveBotToken(context) {
+  const inputId  = context === 'bulk' ? 'bulk-bot-token'          : 'tg-bot-token';
+  const resultId = context === 'bulk' ? 'bulk-token-verify-result' : 'single-token-verify-result';
+  const okId     = context === 'bulk' ? 'bulk-token-ok'            : null;
+  const btnId    = context === 'bulk' ? 'bulk-token-verify-btn'    : null;
+
+  const token   = document.getElementById(inputId)?.value.trim();
+  const resultEl= document.getElementById(resultId);
+  const btn     = btnId ? document.getElementById(btnId) : null;
+
+  if (!token) {
+    showVerifyResult(resultEl, 'error', '❌ توکن خالی است.');
+    return;
+  }
+
+  if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
+  showVerifyResult(resultEl, 'info', '🔄 در حال بررسی اتصال...');
+
+  try {
+    const botInfo = await tgVerifyToken(token);
+    saveBotToken(token);
+
+    // بروزرسانی هر دو فیلد توکن به صورت همزمان
+    ['tg-bot-token','bulk-bot-token'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !el.value) el.value = token;
+    });
+
+    showVerifyResult(resultEl, 'success',
+      `✅ متصل شد — بات: <b>@${botInfo.username || botInfo.first_name}</b>`);
+    if (okId) { const ok = document.getElementById(okId); if (ok) { ok.style.display='inline'; setTimeout(()=>ok.style.display='none',3000); } }
+
+    // نمایش badge اتصال در bulk
+    const badge = document.getElementById('bulk-bot-status-badge');
+    if (badge) {
+      badge.textContent = `✅ @${botInfo.username || botInfo.first_name}`;
+      badge.style.cssText = 'display:inline;background:rgba(62,207,142,0.15);border:1px solid rgba(62,207,142,0.35);color:var(--success);border-radius:20px;padding:2px 10px;font-size:0.72rem;font-weight:600;margin-right:auto;';
+    }
+  } catch(err) {
+    showVerifyResult(resultEl, 'error', '❌ ' + err.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🔌 اتصال'; }
+  }
+}
+
+// ── تأیید و ذخیره کانال واسط ──
+async function verifyAndSaveRelayChat(context) {
+  const inputId  = context === 'bulk' ? 'bulk-relay-chat'          : 'tg-relay-chat';
+  const resultId = context === 'bulk' ? 'bulk-relay-verify-result'  : 'single-relay-verify-result';
+  const okId     = context === 'bulk' ? 'bulk-relay-ok'             : null;
+
+  const val     = document.getElementById(inputId)?.value.trim();
+  const resultEl= document.getElementById(resultId);
+
+  if (!val) {
+    showVerifyResult(resultEl, 'error', '❌ آیدی کانال خالی است.');
+    return;
+  }
+
+  const token = getBotToken();
+  if (!token) {
+    showVerifyResult(resultEl, 'error', '❌ ابتدا توکن بات را وارد و تأیید کنید.');
+    return;
+  }
+
+  showVerifyResult(resultEl, 'info', '🔄 در حال بررسی دسترسی بات...');
+
+  try {
+    // ارسال یک پیام آزمایشی و حذف فوری آن
+    const sendRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: val,
+        text: '🔧 تست اتصال پنل مدیریت — این پیام خودکار حذف می‌شود.',
+        disable_notification: true
+      })
+    });
+    const sendData = await sendRes.json();
+
+    if (!sendData.ok) {
+      const desc = sendData.description || '';
+      if (desc.includes('not enough rights') || desc.includes('CHAT_WRITE_FORBIDDEN'))
+        throw new Error('بات دسترسی ارسال پیام ندارد. ادمین‌اش کنید.');
+      if (desc.includes('chat not found'))
+        throw new Error('کانال/گروه پیدا نشد. آیدی را بررسی کنید.');
+      if (desc.includes('bot is not a member'))
+        throw new Error('بات عضو این کانال/گروه نیست.');
+      throw new Error('خطا: ' + desc);
+    }
+
+    // حذف پیام آزمایشی
+    await fetch(`https://api.telegram.org/bot${token}/deleteMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: val, message_id: sendData.result.message_id })
+    });
+
+    saveRelayChat(val);
+
+    // بروزرسانی هر دو فیلد relay
+    ['tg-relay-chat','bulk-relay-chat'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !el.value) el.value = val;
+    });
+
+    const chatTitle = sendData.result.chat?.title || val;
+    showVerifyResult(resultEl, 'success', `✅ کانال تأیید شد — <b>${chatTitle}</b>`);
+    if (okId) { const ok = document.getElementById(okId); if(ok){ ok.style.display='inline'; setTimeout(()=>ok.style.display='none',3000); } }
+
+  } catch(err) {
+    showVerifyResult(resultEl, 'error', '❌ ' + err.message);
+  }
+}
+
+function showVerifyResult(el, type, html) {
+  if (!el) return;
+  el.style.display = 'block';
+  const colors = {
+    success: { bg:'rgba(62,207,142,0.1)', border:'rgba(62,207,142,0.3)', color:'var(--success)' },
+    error:   { bg:'rgba(255,107,107,0.1)', border:'rgba(255,107,107,0.3)', color:'var(--danger)' },
+    info:    { bg:'rgba(124,106,255,0.1)', border:'rgba(124,106,255,0.25)', color:'var(--accent-soft)' }
+  };
+  const c = colors[type] || colors.info;
+  el.style.cssText += `display:block;padding:6px 10px;border-radius:6px;background:${c.bg};border:1px solid ${c.border};color:${c.color};`;
+  el.innerHTML = html;
+}
+
+function onBulkTokenInput() {
+  // پاک کردن نتیجه تأیید قبلی هنگام ویرایش
+  const r = document.getElementById('bulk-token-verify-result');
+  if (r) r.style.display = 'none';
+}
+
+function onUrlInput(val) {
+  const btn = document.getElementById('tg-fetch-btn');
+  const isTg = /t\.me\//i.test(val);
+  btn.style.display = isTg ? 'flex' : 'none';
+  if (!isTg) {
+    document.getElementById('tg-info-box').style.display = 'none';
+    document.getElementById('tg-fetch-status').style.display = 'none';
+    document.getElementById('tg-token-panel').style.display = 'none';
+  }
+}
+
+// ── دریافت اطلاعات برای فرم تکی ──
+async function fetchTelegramInfo() {
+  const url        = document.getElementById('ep-url').value.trim();
+  const statusEl   = document.getElementById('tg-fetch-status');
+  const infoBox    = document.getElementById('tg-info-box');
+  const tokenPanel = document.getElementById('tg-token-panel');
+  const iconEl     = document.getElementById('tg-fetch-icon');
+  const btn        = document.getElementById('tg-fetch-btn');
+
+  // پر کردن فیلدهای پانل از localStorage
+  const savedToken = getBotToken();
+  const savedRelay = getRelayChat();
+  if (savedToken) { const el = document.getElementById('tg-bot-token'); if(el && !el.value) el.value = savedToken; }
+  if (savedRelay) { const el = document.getElementById('tg-relay-chat'); if(el && !el.value) el.value = savedRelay; }
+
+  const token = getBotToken();
+  if (!token) {
+    tokenPanel.style.display = 'block';
+    tokenPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = `<div class="alert alert-warning show" style="margin:0;">⚠️ ابتدا توکن بات را وارد و «🔌 اتصال» را بزنید.</div>`;
+    return;
+  }
+
+  if (!getRelayChat()) {
+    tokenPanel.style.display = 'block';
+    tokenPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = `<div class="alert alert-warning show" style="margin:0;">⚠️ آیدی کانال/گروه واسط را وارد و «✔️ تأیید» را بزنید.</div>`;
+    return;
+  }
+
+  const parsed = parseTgLink(url);
+  if (!parsed) {
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = `<div class="alert alert-error show" style="margin:0;">❌ لینک تلگرام شناسایی نشد. فرمت صحیح: <code style="direction:ltr;display:inline-block;">https://t.me/channel/123</code></div>`;
+    return;
+  }
+
+  iconEl.textContent = '⏳';
+  btn.disabled = true;
+  statusEl.style.display = 'block';
+  statusEl.innerHTML = `<div class="alert alert-warning show" style="margin:0;">📡 در حال دریافت از تلگرام...</div>`;
+  infoBox.style.display = 'none';
+
+  try {
+    const msg  = await tgFetchMessage(token, parsed.chatId, parsed.msgId);
+    const info = extractInfoFromMsg(msg);
+    if (!info) throw new Error('این پیام فایل صوتی ندارد. مطمئن شوید پیام حاوی audio/voice است.');
+    fillSingleForm(info, url, statusEl, infoBox);
+  } catch(err) {
+    if (err.message === 'NEED_RELAY') {
+      tokenPanel.style.display = 'block';
+      tokenPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      statusEl.innerHTML = `<div class="alert alert-warning show" style="margin:0;">⚠️ آیدی کانال واسط را وارد کنید.</div>`;
+    } else {
+      statusEl.innerHTML = `<div class="alert alert-error show" style="margin:0;">❌ ${err.message}</div>`;
+    }
+  } finally {
+    iconEl.textContent = '📡';
+    btn.disabled = false;
+  }
+}
+
+function fillSingleForm(info, originalUrl, statusEl, infoBox) {
+  statusEl.style.display = 'none';
+  const items = [];
+
+  if (info.duration) {
+    document.getElementById('ep-duration').value = info.duration;
+    items.push({ icon:'⏱', label:'مدت زمان', value: info.duration });
+  }
+  if (info.performer) {
+    document.getElementById('ep-performer').value = info.performer;
+    items.push({ icon:'🎤', label:'خواننده', value: info.performer });
+  }
+  if (info.title) {
+    const t = document.getElementById('ep-title');
+    if (!t.value) t.value = info.title;
+    items.push({ icon:'🎵', label:'عنوان', value: info.title });
+  }
+  if (info.dateStr) {
+    const d = document.getElementById('ep-date');
+    if (!d.value) d.value = info.dateStr;
+    items.push({ icon:'📅', label:'تاریخ', value: info.dateStr });
+  }
+  if (info.caption) {
+    const d = document.getElementById('ep-desc');
+    if (!d.value) d.value = info.caption;
+    items.push({ icon:'📝', label:'کپشن', value: info.caption.substring(0,50)+'...' });
+  }
+  if (info.fileId) {
+    document.getElementById('ep-url').dataset.telegramFileId = info.fileId;
+    items.push({ icon:'🔑', label:'File ID', value: info.fileId.substring(0,18)+'...' });
+  }
+  if (info.fileSizeMB) items.push({ icon:'💾', label:'حجم', value: info.fileSizeMB+' MB' });
+
+  infoBox.style.display = 'block';
+  document.getElementById('tg-info-items').innerHTML = items.map(it => `
+    <div style="background:rgba(62,207,142,0.08);border:1px solid rgba(62,207,142,0.2);border-radius:var(--radius-sm);padding:8px 12px;font-size:0.8rem;">
+      <div style="color:var(--text-muted);font-size:0.7rem;">${it.icon} ${it.label}</div>
+      <div style="color:var(--text-primary);font-weight:600;margin-top:2px;">${it.value}</div>
+    </div>`).join('');
+}
+
+// ══════════════ افزودن دسته‌ای ══════════════
+let bulkRows = []; // آرایه نتایج پیش‌نمایش
+
+function bulkInit() {
+  const sel = document.getElementById('bulk-book-select');
+  sel.innerHTML = '<option value="">— انتخاب کنید —</option>' +
+    workingCatalog.map(b => `<option value="${b.id}">${b.title} — ${b.author}</option>`).join('');
+
+  // پر کردن فیلدهای ذخیره‌شده
+  const savedToken = getBotToken();
+  const savedRelay = getRelayChat();
+  if (savedToken) {
+    const el = document.getElementById('bulk-bot-token');
+    if (el) el.value = savedToken;
+    // نمایش badge اتصال اگر توکن از قبل تأیید شده
+    tgVerifyToken(savedToken).then(botInfo => {
+      const badge = document.getElementById('bulk-bot-status-badge');
+      if (badge) {
+        badge.textContent = `✅ @${botInfo.username || botInfo.first_name}`;
+        badge.style.cssText = 'display:inline;background:rgba(62,207,142,0.15);border:1px solid rgba(62,207,142,0.35);color:var(--success);border-radius:20px;padding:2px 10px;font-size:0.72rem;font-weight:600;margin-right:auto;';
+      }
+    }).catch(() => {});
+  }
+  if (savedRelay) {
+    const el = document.getElementById('bulk-relay-chat');
+    if (el) el.value = savedRelay;
+  }
+}
+
+async function bulkPreview() {
+  const bookId = document.getElementById('bulk-book-select').value;
+  if (!bookId) { alert('لطفاً ابتدا کتاب را انتخاب کنید.'); return; }
+
+  const rawLinks = document.getElementById('bulk-links').value.trim();
+  const links = rawLinks.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (!links.length) { alert('لینکی وارد نشده است.'); return; }
+
+  // همگام‌سازی توکن و relay از فیلدهای bulk با localStorage
+  const bulkToken = document.getElementById('bulk-bot-token')?.value.trim();
+  const bulkRelay = document.getElementById('bulk-relay-chat')?.value.trim();
+  if (bulkToken) saveBotToken(bulkToken);
+  if (bulkRelay) saveRelayChat(bulkRelay);
+
+  const token = getBotToken();
+  const relay = getRelayChat();
+
+  if (!token) { alert('لطفاً ابتدا توکن بات را وارد کرده و «🔌 اتصال» را بزنید.'); return; }
+  if (!relay)  { alert('لطفاً آیدی کانال/گروه واسط را وارد کرده و «✔️ تأیید» را بزنید.'); return; }
+
+  const btn = document.getElementById('bulk-preview-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ در حال دریافت...';
+
+  const area = document.getElementById('bulk-preview-area');
+  const container = document.getElementById('bulk-rows-container');
+  const summary   = document.getElementById('bulk-preview-summary');
+  area.style.display = 'block';
+  container.innerHTML = '';
+  bulkRows = [];
+
+  let successCount = 0, failCount = 0;
+
+  for (let i = 0; i < links.length; i++) {
+    const url = links[i];
+    const rowId = 'bulk-row-' + i;
+
+    // نمایش ردیف در حال بارگذاری
+    container.innerHTML += `
+      <div id="${rowId}" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:1.2rem;">⏳</span>
+          <div style="font-size:0.8rem;color:var(--text-muted);direction:ltr;">${url}</div>
+        </div>
+      </div>`;
+
+    const rowEl = document.getElementById(rowId);
+
+    try {
+      const parsed = parseTgLink(url);
+      if (!parsed) throw new Error('لینک نامعتبر');
+
+      const msg  = await tgFetchMessage(token, parsed.chatId, parsed.msgId);
+      const info = extractInfoFromMsg(msg);
+      if (!info) throw new Error('فایل صوتی پیدا نشد');
+
+      successCount++;
+      bulkRows.push({ url, info, valid: true, idx: i });
+
+      rowEl.style.borderColor = 'rgba(62,207,142,0.3)';
+      rowEl.style.background  = 'rgba(62,207,142,0.04)';
+      rowEl.innerHTML = `
+        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+          <span style="font-size:1.2rem;flex-shrink:0;">✅</span>
+          <div style="flex:1;min-width:200px;">
+            <div style="font-weight:600;font-size:0.88rem;color:var(--text-primary);margin-bottom:6px;">
+              <input class="form-input" id="br-title-${i}" value="${(info.title||'').replace(/"/g,'&quot;')}" placeholder="عنوان *" style="font-size:0.85rem;padding:6px 10px;" />
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <input class="form-input" id="br-duration-${i}" value="${info.duration||''}" placeholder="مدت زمان" style="width:90px;font-size:0.8rem;padding:5px 8px;" />
+              <input class="form-input" id="br-performer-${i}" value="${(info.performer||'').replace(/"/g,'&quot;')}" placeholder="خواننده" style="flex:1;min-width:100px;font-size:0.8rem;padding:5px 8px;" />
+              <input class="form-input" id="br-date-${i}" value="${info.dateStr||''}" placeholder="تاریخ" style="width:110px;font-size:0.8rem;padding:5px 8px;" />
+            </div>
+            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:5px;direction:ltr;">${url}</div>
+          </div>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.78rem;color:var(--text-secondary);white-space:nowrap;">
+            <input type="checkbox" id="br-new-${i}" /> جدید
+          </label>
+        </div>`;
+
+    } catch(err) {
+      failCount++;
+      bulkRows.push({ url, info: null, valid: false, idx: i, error: err.message });
+      rowEl.style.borderColor = 'rgba(255,107,107,0.3)';
+      rowEl.style.background  = 'rgba(255,107,107,0.04)';
+      rowEl.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:1.2rem;">❌</span>
+          <div>
+            <div style="font-size:0.8rem;color:var(--danger);">${err.message}</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);direction:ltr;">${url}</div>
+          </div>
+        </div>`;
+    }
+  }
+
+  summary.innerHTML = `<span style="color:var(--success);">✅ ${successCount} موفق</span>&nbsp;&nbsp;<span style="color:var(--danger);">❌ ${failCount} ناموفق</span> از ${links.length} لینک`;
+  document.getElementById('bulk-confirm-btn').style.display = successCount > 0 ? 'inline-flex' : 'none';
+
+  btn.disabled = false;
+  btn.textContent = '🔍 پیش‌نمایش و دریافت اطلاعات';
+}
+
+function bulkConfirmAdd() {
+  const bookId = document.getElementById('bulk-book-select').value;
+  if (!bookId) return;
+  const book = workingCatalog.find(b => b.id === bookId);
+  if (!book) return;
+
+  let addedCount = 0;
+  bulkRows.forEach(row => {
+    if (!row.valid) return;
+    const i = row.idx;
+    const title    = (document.getElementById(`br-title-${i}`)?.value || '').trim();
+    const duration = (document.getElementById(`br-duration-${i}`)?.value || '').trim();
+    const performer= (document.getElementById(`br-performer-${i}`)?.value || '').trim();
+    const date     = (document.getElementById(`br-date-${i}`)?.value || '').trim();
+    const isNew    = document.getElementById(`br-new-${i}`)?.checked || false;
+
+    if (!title) return; // بدون عنوان نمی‌افزاییم
+
+    const epId = newId('ep-' + bookId.replace('book-','') + '-', book.episodes);
+    book.episodes.push({
+      id: epId,
+      title,
+      duration,
+      audioUrl: row.url,
+      telegramFileId: row.info.fileId || '',
+      performer,
+      description: row.info.caption || '',
+      date: date || toJalali(),
+      isNew
+    });
+    addedCount++;
+  });
+
+  book.totalEpisodes = book.episodes.length;
+  saveCatalog();
+
+  // ریست
+  bulkRows = [];
+  document.getElementById('bulk-links').value = '';
+  document.getElementById('bulk-preview-area').style.display = 'none';
+  document.getElementById('bulk-confirm-btn').style.display = 'none';
+  document.getElementById('bulk-preview-summary').textContent = '';
+  document.getElementById('bulk-rows-container').innerHTML = '';
+
+  const s = document.getElementById('bulk-alert-success');
+  s.textContent = `✅ ${addedCount} اپیزود با موفقیت به «${book.title}» اضافه شد!`;
+  s.classList.add('show');
+  setTimeout(() => s.classList.remove('show'), 5000);
+  renderDashboard();
+}
+
+// ── شروع ──
+// ── شروع ──
+renderDashboard();
+document.getElementById('ep-date').value = toJalali();
+</script>
+</body>
+</html>
