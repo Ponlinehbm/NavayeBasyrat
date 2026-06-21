@@ -1,0 +1,6 @@
+name = "podcast-proxy"
+main = "index.js"
+compatibility_date = "2024-09-01"
+
+# توکن بات رو با این دستور ست کن (یا از داشبورد Cloudflare → Settings → Variables):
+# wrangler secret put BOT_TOKEN

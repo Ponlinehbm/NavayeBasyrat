@@ -1,0 +1,18 @@
+{
+  "categories": [
+    { "id": "tech", "name": "تکنولوژی" },
+    { "id": "talk", "name": "گفت‌وگو" }
+  ],
+  "episodes": [
+    {
+      "id": "ep-sample-1",
+      "title": "اپیزود نمونه — اینو از پنل ادمین جایگزین کن",
+      "description": "این یک اپیزود نمونه است.",
+      "categoryId": "tech",
+      "fileId": "REPLACE_WITH_REAL_TELEGRAM_FILE_ID",
+      "duration": 1245,
+      "cover": "",
+      "order": 1
+    }
+  ]
+}
