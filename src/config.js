@@ -2,14 +2,14 @@
 
 export const CONFIG = {
   // نام کاربری گیت‌هاب و نام ریپازیتوری — برای خواندن/نوشتن data/episodes.json
-  GITHUB_OWNER: 'YOUR_GITHUB_USERNAME',
-  GITHUB_REPO: 'YOUR_REPO_NAME',
+  GITHUB_OWNER: 'https://github.com/Ponlinehbm',
+  GITHUB_REPO: 'https://github.com/Ponlinehbm/NavayeBasyrat',
   GITHUB_BRANCH: 'main',
   DATA_PATH: 'data/episodes.json',
 
   // آدرس Cloudflare Worker (بعد از دیپلوی، از پنل Cloudflare کپی کن)
   // مثال: https://podcast-proxy.username.workers.dev
-  WORKER_URL: 'https://YOUR-WORKER.workers.dev',
+  WORKER_URL: 'https://navayebasyrat.ponlinehbm.workers.dev',
 }
 
 // آدرس خام فایل داده برای خوندن سریع (از طریق jsDelivr CDN — کش می‌شه و سریع‌تره)
