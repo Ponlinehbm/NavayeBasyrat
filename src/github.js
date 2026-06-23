@@ -44,21 +44,23 @@ export async function getEpisodesFile(token) {
 }
 
 export async function saveEpisodesFile(token, data, sha, message) {
-  const url = `${API_BASE}/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO}/contents/${CONFIG.DATA_PATH}`
-  const body = {
-    message: message || 'بروزرسانی اپیزودها از پنل ادمین',
-    content: utf8ToBase64(JSON.stringify(data, null, 2)),
-    branch: CONFIG.GITHUB_BRANCH,
-  }
-  if (sha) body.sha = sha
-  const res = await fetch(url, {
-    method: 'PUT',
-    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+  const res = await fetch(`${CONFIG.WORKER_URL}/save-episodes`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      token,
+      owner: CONFIG.GITHUB_OWNER,
+      repo: CONFIG.GITHUB_REPO,
+      path: CONFIG.DATA_PATH,
+      branch: CONFIG.GITHUB_BRANCH,
+      content: utf8ToBase64(JSON.stringify(data, null, 2)),
+      sha,
+      message: message || 'بروزرسانی اپیزودها از پنل ادمین',
+    }),
   })
+  const json = await res.json().catch(() => ({}))
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(err.message || 'ذخیره با خطا مواجه شد (' + res.status + ')')
+    throw new Error(json.message || 'ذخیره با خطا مواجه شد (' + res.status + ')')
   }
-  return res.json()
+  return json
 }
