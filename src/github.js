@@ -9,7 +9,6 @@ function authHeaders(token) {
   }
 }
 
-// base64 امن برای یونیکد (فارسی) — btoa ساده با کاراکترهای غیر لاتین کار نمی‌کنه
 function utf8ToBase64(str) {
   const bytes = new TextEncoder().encode(str)
   let binary = ''
